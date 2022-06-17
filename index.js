@@ -124,7 +124,7 @@ app.get("/deleteSlotById",checkToken, deleteSlot);
 app.post("/instantBooking",checkToken, InstantBooking);
 app.post("/bookForLater",checkToken, bookForLater);
 
-const port = process.env.MYSQL_PORT || 4000;
+const port = process.env.PORT || 4000;
 
 
 app.listen(port, () => {
