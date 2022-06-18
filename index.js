@@ -4,7 +4,7 @@ const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser')
 const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater} = require("./controller/user.controller");
-
+//https://smart-parking-management-sys.herokuapp.com/
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const db = require("./config/database");
