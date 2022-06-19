@@ -621,7 +621,7 @@ module.exports = {
       });
       const first_empty_slot = results[0].slot_id
       
-      addBooking({ user_id, slot_id: first_empty_slot,...body,booking_from},(err, results) => {
+      addBooking({ user_id, slot_id: first_empty_slot,...body,booking_from:body.booking_from},(err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
