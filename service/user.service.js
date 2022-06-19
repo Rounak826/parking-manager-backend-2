@@ -396,6 +396,21 @@ module.exports = {
     );
 
   },
+  getSlotsByFloor: (id, callBack) => {
+    db.query(
+      `select * from slots where floor_id = ?`,
+      [
+        id
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+
+  },
   updateSlotById: (data, callBack) => {
     db.query(
       `update slots set floor_id=?,row=?,col=?,status=?,occupied_till=?,user_id=?,specially_abled_friendly=? where floor_id=? and parking_id=?,`,
@@ -432,6 +447,7 @@ module.exports = {
       }
     );
   },
+
   //booking
   addBooking: (data, callBack) => {
     db.query(
