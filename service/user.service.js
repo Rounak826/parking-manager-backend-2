@@ -381,7 +381,6 @@ module.exports = {
 
         parking_id,
         booking_till,
-        parking_id,
         booking_from,
         
        
