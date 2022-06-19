@@ -24,7 +24,7 @@ function handleDisconnect() {
         if (error) {
           return console.log('db error:', error)
         }
-        return console.log(results)
+        return console.log('connection alive')
       })
 
     }, 90000)                                                  // the old one cannot be reused.

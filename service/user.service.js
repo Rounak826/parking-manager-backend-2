@@ -376,7 +376,7 @@ module.exports = {
   },
   getAllEmptySlots2 : (parking_id,booking_till,booking_from, callBack) => {
     db.query(
-      `select * from bookings where parking_id=? and booking_from <= (?-1*60*60*100) union  select * from bookings where parking_id=? and booking_till >= (?+1*60*60*100)`,
+      `select slot_id from bookings where parking_id=? and booking_from <= (?-1*60*60*100) or booking_till >= (?+1*60*60*100)`,
       [
 
         parking_id,
