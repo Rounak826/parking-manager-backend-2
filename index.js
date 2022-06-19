@@ -118,7 +118,7 @@ app.get("/deleteFloorById",checkToken, deleteFloorById);
 //slots
 app.post("/addSlot",checkToken, addSlot);
 app.post("/getAvailableSlot",checkToken, getAvailableSlots);
-app.post("/getSlotsByFloor",checkToken, getSlotsByFloor);
+app.get("/getSlotsByFloor",checkToken, getSlotsByFloor);
 app.get("/deleteSlotById",checkToken, deleteSlot);
 
 //bookings
