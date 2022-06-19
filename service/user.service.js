@@ -380,8 +380,8 @@ module.exports = {
       [
 
         parking_id,
-        booking_till,
         booking_from,
+        booking_till,
         booking_from,
         booking_till
       ],
