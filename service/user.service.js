@@ -306,14 +306,15 @@ module.exports = {
   //slots
   addSlots: (data, callBack) => {
     db.query(
-      `insert into slots(parking_id,floor_id,row,col,specially_abled_friendly) 
+      `insert into slots(parking_id,floor_id,y,x,specially_abled_friendly,type) 
         values(?,?,?,?,?)`,
       [
         data.parking_id,
         data.floor_id,
-        data.row,
-        data.col,
+        data.y,
+        data.x,
         data.specially_abled_friendly,
+        data.type
       ],
       (error, results, fields) => {
         if (error) {
