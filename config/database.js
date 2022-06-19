@@ -27,7 +27,7 @@ function handleDisconnect() {
         return console.log(results)
       })
 
-    }, 90)                                                  // the old one cannot be reused.
+    }, 90000)                                                  // the old one cannot be reused.
 
 
     // to avoid a hot loop, and to allow our node script to
