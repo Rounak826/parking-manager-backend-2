@@ -384,8 +384,6 @@ module.exports = {
         booking_from,
         booking_from,
         booking_till
-        
-       
       ],
       
       (error, results, fields) => {
