@@ -143,6 +143,18 @@ module.exports = {
       }
     )
   },
+  getVehicleById: (id, callBack) => {
+    db.query(
+      `select * from vehicles where vehicle_id = ?`,
+      [id],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    )
+  },
 
   //parking
   addParking: (data, callBack) => {

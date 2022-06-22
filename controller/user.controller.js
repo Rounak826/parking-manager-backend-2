@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor, getVehicleById } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
@@ -235,7 +235,14 @@ module.exports = {
           message: err.message,
         });
       }
-      return res.json({
+      if (results.length == 0) {
+        return res.status(404).json({
+          success: true,
+          data: results,
+          message: 'No vehicle Found'
+        });
+      }
+      return res.status(200).json({
         success: true,
         data: results,
         message: 'Records Found.'
@@ -266,6 +273,34 @@ module.exports = {
 
     });
   },
+  getVehicle: (req, res) => {
+    if (req.decoded.result.role === 'parking') {
+      getVehicleById(req.query.vehicle_id, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        if (results.length == 0) {
+          return res.status(404).json({
+            success: true,
+            data: results,
+            message: 'No vehicle Found'
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          data: results[0],
+          message: 'Records Found.'
+        });
+      });
+    }
+
+
+  },
+
 
   //parking
   addParking: (req, res) => {
@@ -528,10 +563,10 @@ module.exports = {
   getAvailableSlots: (req, res) => {
     const parking_id = req.decoded.result.user_id;
     const booking_till = req.body.booking_till;
-    const booking_from =  req.body.booking_from;
+    const booking_from = req.body.booking_from;
     const booking_till_mills = new Date(booking_till).getTime();
     const booking_from_mills = new Date(booking_from).getTime();
-    getAllEmptySlots2(parking_id, booking_till_mills,booking_from_mills, (err, results) => {
+    getAllEmptySlots2(parking_id, booking_till_mills, booking_from_mills, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -555,7 +590,7 @@ module.exports = {
       /**/
     })
   },
-  getSlotsByFloor:(req, res) => {
+  getSlotsByFloor: (req, res) => {
     getSlotsByFloor(req.query.floor_id, (err, results) => {
       if (err) {
         console.log(err);
@@ -599,7 +634,7 @@ module.exports = {
       });
       const first_empty_slot = results[0].slot_id
       const booking_from = new Date().getTime()
-      addBooking({ parking_id, slot_id: first_empty_slot,...body,booking_from},(err, results) => {
+      addBooking({ parking_id, slot_id: first_empty_slot, ...body, booking_from }, (err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -611,7 +646,7 @@ module.exports = {
           success: false,
           message: "Failed To Book Slot",
         });
-  
+
         return res.status(200).json({
           success: true,
           data: first_empty_slot,
@@ -631,7 +666,7 @@ module.exports = {
     const body = req.body
     body.booking_till = new Date(body.booking_till).getTime();
     body.booking_from = new Date(body.booking_from).getTime();
-    getAllEmptySlots2(parking_id, body.booking_till,body.booking_from, (err, results) => {
+    getAllEmptySlots2(parking_id, body.booking_till, body.booking_from, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -644,8 +679,8 @@ module.exports = {
         message: "No slots found"
       });
       const first_empty_slot = results[0].slot_id
-      
-      addBooking({ user_id, slot_id: first_empty_slot,...body,booking_from:body.booking_from},(err, results) => {
+
+      addBooking({ user_id, slot_id: first_empty_slot, ...body, booking_from: body.booking_from }, (err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -657,7 +692,7 @@ module.exports = {
           success: false,
           message: "Failed To Book Slot",
         });
-  
+
         return res.status(200).json({
           success: true,
           data: first_empty_slot,
