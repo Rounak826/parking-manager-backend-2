@@ -585,7 +585,7 @@ module.exports = {
       return res.status(200).json({
         success: true,
         message: "slots Available",
-        data: results[0]
+        data: instant?results[0]: results[results.length-1]
       });
 
       /**/
