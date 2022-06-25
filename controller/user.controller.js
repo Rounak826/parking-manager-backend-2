@@ -561,6 +561,7 @@ module.exports = {
     });
   },
   getAvailableSlots: (req, res) => {
+    console.log(req.body)
     const parking_id = req.decoded.result.user_id;
     const booking_till = req.body.booking_till;
     const booking_from = req.body.booking_from;
