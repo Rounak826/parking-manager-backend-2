@@ -561,13 +561,13 @@ module.exports = {
     });
   },
   getAvailableSlots: (req, res) => {
-    console.log(req.body)
+    const instant = req.body.instant
     const parking_id = req.decoded.result.user_id;
     const booking_till = req.body.booking_till;
     const booking_from = req.body.booking_from;
     const booking_till_mills = new Date(booking_till).getTime();
     const booking_from_mills = new Date(booking_from).getTime();
-    getAllEmptySlots2(parking_id, booking_till_mills, booking_from_mills, (err, results) => {
+    getAllEmptySlots2(parking_id, booking_till_mills, booking_from_mills,instant, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -585,7 +585,7 @@ module.exports = {
       return res.status(200).json({
         success: true,
         message: "slots Available",
-        data: results
+        data: results[0]
       });
 
       /**/

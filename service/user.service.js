@@ -1,4 +1,3 @@
-const res = require("express/lib/response");
 const db = require("../config/database");
 const moment = require('moment')
 
@@ -387,16 +386,19 @@ module.exports = {
     );
 
   },
-  getAllEmptySlots2 : (parking_id,booking_till,booking_from, callBack) => {
+  getAllEmptySlots2 : (parking_id,booking_till,booking_from,instant, callBack) => {
     db.query(
-      `select * from slots where slot_id not in (select slot_id from bookings where parking_id=? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) )`,
+      `select * from slots where slot_id not in (select slot_id from bookings where parking_id=? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) ) order by floor_id ?, y ?, x ? `,
       [
 
         parking_id,
         booking_from,
         booking_till,
         booking_from,
-        booking_till
+        booking_till,
+        instant?'':'DESC',
+        instant?'':'DESC',
+        instant?'':'DESC'
       ],
       
       (error, results, fields) => {
