@@ -774,7 +774,7 @@ module.exports = {
           });
         }
         console.log({user_id,role},results[0])
-        if(role==='parking' && user_id == results[0].parking_id){
+        if(role==='parking'){
           return res.status(200).json({
             success: true,
             data: results[0],
