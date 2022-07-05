@@ -199,7 +199,7 @@ module.exports = {
   },
   getAllParkings:callBack => {
     db.query(
-      `select * from parking `,
+      `select *  from parking`,
       [],
       (error, results, fields) => {
         if (error) {
@@ -208,7 +208,6 @@ module.exports = {
         return callBack(null, results);
       }
     );
-
   },
   updateParkingDetails: (data, callBack) => {
     db.query(
