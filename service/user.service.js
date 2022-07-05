@@ -197,6 +197,19 @@ module.exports = {
     );
 
   },
+  getAllParkings:(callBack) => {
+    db.query(
+      `select * from parking `,
+      [],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results[0]);
+      }
+    );
+
+  },
   updateParkingDetails: (data, callBack) => {
     db.query(
       `update parking set name=?,email=?,mobile=?,mobile2=?,address=?,map=?,image_url=?,rate=?,penalty_rate=?,capacity=?,facilities=?,upi_id=? where parking_id=?`,
@@ -386,7 +399,28 @@ module.exports = {
     );
 
   },
-  getAllEmptySlots2: (parking_id, booking_till, booking_from, callBack) => {
+  getAllEmptySlotsForLater: (parking_id, booking_till, booking_from, callBack) => {
+    db.query(
+      `select * from slots where slot_id not in (select slot_id from bookings where parking_id=? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) ) order by floor_id , y , x `,
+      [
+
+        parking_id,
+        booking_from,
+        booking_till,
+        booking_from,
+        booking_till,
+      ],
+
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+
+  },
+  getAllEmptySlotsForInstant: (parking_id, booking_till, booking_from, callBack) => {
     db.query(
       `select * from slots where slot_id not in (select slot_id from bookings where parking_id=? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) ) order by floor_id , y , x `,
       [
@@ -495,12 +529,32 @@ module.exports = {
     );
 
   },
-  getBookingByTime: (parking_id, data, callBack) => {
+  getBookingByTime: (data, callBack) => {
     db.query(
-      `select * from bookings where booking_from>? and parking_id=? `,
+      `select * from bookings where booking_from>? and user_id=? `,
       [
+        data.booking_from,
+        data.user_id
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  updateBooking: (data, callBack) => {
+    db.query(
+      `update bookings set slot_id,vehicle_id,booking_from,booking_till) 
+        values(?,?,?,?,?) where booking_id=?`,
+      [
+
+        data.slot_id,
+        data.vehicle_id,
+        data.booking_from,
         data.booking_till,
-        parking_id
+        data.booking_id
       ],
       (error, results, fields) => {
         if (error) {

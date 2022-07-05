@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
@@ -395,6 +395,31 @@ module.exports = {
 
     });
   },
+  getAllParking: (req, res) => {
+
+    getParkingDetails((err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if(!results) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No Records Found.'
+        });
+      }
+      return res.json({
+        success: true,
+        data: results,
+        message: 'Records Found.'
+      });
+    });
+
+  },
 
   //floor
   addFloor: (req, res) => {
@@ -675,11 +700,14 @@ module.exports = {
           message: err.message
         });
       }
-      if (results.length == 0) return res.status(400).json({
+
+      //reserve 5 slots
+      if (results.length > 5) return res.status(400).json({
         success: false,
         message: "No slots found"
       });
-      const first_empty_slot = results[0].slot_id
+      //select 5th available slot from last
+      const first_empty_slot = results[results.length-5].slot_id
 
       addBooking({ user_id, slot_id: first_empty_slot, ...body, booking_from: body.booking_from }, (err, results) => {
         if (err) {
@@ -705,6 +733,89 @@ module.exports = {
     }
 
     )
+
+  },
+  updateBooking:(req, res) => {
+    getBookingById(req.query.booking_id,(err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      if (results.length == 0) return res.status(400).json({
+        success: false,
+        message: "No Bookings found"
+      });
+      let booking = results[0]
+      getAllEmptySlots2(booking.parking_id, booking.booking_till, booking.booking_from, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message
+          });
+        }
+        if (results.length == 0) return res.status(400).json({
+          success: false,
+          message: "No slots found"
+        });
+        const first_empty_slot = results[0].slot_id
+  
+        updateBooking({ ...booking, slot_id: first_empty_slot }, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: false,
+              message: err.message
+            });
+          }
+          if (results.affectedRows == 0) return res.status(400).json({
+            success: false,
+            message: "Failed To Book Slot",
+          });
+  
+          return res.status(200).json({
+            success: true,
+            data: first_empty_slot,
+            message: 'Slot Booked Successfully'
+          });
+  
+        })
+  
+      }
+  
+      )
+  
+    
+    })
+
+  },
+  getUserBookings:(req, res) => {
+    let booking_from= req.query.booking_from
+    let user_id = req.decoded.result.user_id
+    getBookingByTime({booking_from,user_id}, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (!results) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No Records Found.'
+        });
+      }
+      return res.json({
+        success: true,
+        data: results,
+        message: 'Records Found.'
+      });
+    });
 
   },
 

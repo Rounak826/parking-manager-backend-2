@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser')
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,6 +12,7 @@ const { checkToken } = require("./auth/token_validation");
 //file upload
 const fs = require('fs')
 const multer = require('multer');
+const { getAllParkings } = require("./service/user.service");
 const storage = multer.diskStorage({
   destination: (req,file,cb)=>{
       cb(null,'storage')
@@ -109,6 +110,7 @@ app.post("/addParking",checkToken, addParking);
 app.post("/updateParkingDetails",checkToken, updateParkingDetails);
 app.get("/deleteParkingById",checkToken, deleteParkingById);
 app.get("/getParkingDetails", getParkingDetails);
+app.get("/getAllparkings",checkToken ,getAllParkings);
 
 //floor
 app.post("/addFloor",checkToken, addFloor);
@@ -125,7 +127,7 @@ app.get("/deleteSlotById",checkToken, deleteSlot);
 //bookings
 app.post("/instantBooking",checkToken, InstantBooking);
 app.post("/bookForLater",checkToken, bookForLater);
-
+app.get("/userBookings",checkToken, getUserBookings);
 
 //Booking Request
 app.post("/sendRequest",checkToken, sendRequest);
