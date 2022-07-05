@@ -646,7 +646,8 @@ module.exports = {
     const parking_id = req.decoded.result.user_id
     const body = req.body
     body.booking_till = new Date(body.booking_till).getTime();
-    getAllEmptySlotsForInstant(parking_id, body.booking_till, (err, results) => {
+    body.booking_from = new Date().getTime()
+    getAllEmptySlotsForInstant(parking_id, body.booking_till,body.booking_from, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
