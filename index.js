@@ -109,7 +109,7 @@ app.get("/getVehicle",checkToken, getVehicle);
 app.post("/addParking",checkToken, addParking);
 app.post("/updateParkingDetails",checkToken, updateParkingDetails);
 app.get("/deleteParkingById",checkToken, deleteParkingById);
-app.get("/getParkingDetails", getParkingDetails);
+app.get("/getParkingDetails",checkToken, getParkingDetails);
 app.get("/getAllparkings",checkToken ,getAllParkings);
 
 //floor

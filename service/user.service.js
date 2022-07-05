@@ -53,7 +53,7 @@ module.exports = {
       }
     );
   },
-  getUserById: (data, callBack) => {
+  getUserById: (id, callBack) => {
     db.query(
       `select id,firstName,lastName,gender,email,number from user where id = ?`,
       [id],
@@ -197,10 +197,10 @@ module.exports = {
     );
 
   },
-  getAllParkings:callBack => {
+  getAllParkings: (callBack) => {
     db.query(
-      `select *  from parking`,
-      [],
+      `select * from parking`,
+      [id],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
@@ -208,6 +208,7 @@ module.exports = {
         return callBack(null, results);
       }
     );
+
   },
   updateParkingDetails: (data, callBack) => {
     db.query(

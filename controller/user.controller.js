@@ -1,8 +1,8 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParkings } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParkings } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
-const fs = require('fs')
+
 
 
 module.exports = {
@@ -395,21 +395,30 @@ module.exports = {
 
     });
   },
-  getAllParking: (req, res) => {
-
+  getAllParkings: (req, res) => {
     getAllParkings((err, results) => {
       if (err) {
         console.log(err);
-        return;
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (!results) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No Records Found.'
+        });
       }
       return res.json({
         success: true,
-        data: results
+        data: results,
+        message: 'Records Found.'
       });
     });
 
   },
-
   //floor
   addFloor: (req, res) => {
     const user_id = req.decoded.result.user_id
