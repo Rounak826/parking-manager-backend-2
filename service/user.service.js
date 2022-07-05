@@ -531,12 +531,11 @@ module.exports = {
 
   addBookingRequest: (data, callBack) => {
     db.query(
-      `insert into book_request(user_id,vehicle_id,parking_id,booking_from,booking_till,status,type) 
-        values(?,?,?,?,?,?,?)`,
+      `insert into book_request(user_id,vehicle_id,booking_from,booking_till,status,type) 
+        values(?,?,?,?,?,?)`,
       [
         data.user_id,
         data.vehicle_id,
-        data.parking_id,
         data.booking_from,
         data.booking_till,
         data.status,
