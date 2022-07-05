@@ -711,7 +711,8 @@ module.exports = {
   //Booking request
 
   sendRequest: (req, res) => {
-    addBookingRequest({ ...req.body}, (err, results) => {
+    const user_id = req.decoded.result.user_id
+    addBookingRequest({ ...req.body, user_id}, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -756,7 +757,7 @@ module.exports = {
 
     const user_id = req.decoded.result.user_id
     const role = req.decoded.result.role
-    
+  
       getRequestById(req.query.request_id, (err, results) => {
         if (err) {
           console.log(err);
@@ -772,6 +773,7 @@ module.exports = {
             message: 'No Request Found'
           });
         }
+        console.log({user_id,role},results[0])
         if(role==='parking' && user_id == results[0].parking_id){
           return res.status(200).json({
             success: true,
