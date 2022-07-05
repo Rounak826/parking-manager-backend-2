@@ -200,7 +200,7 @@ module.exports = {
   getAllParkings: (callBack) => {
     db.query(
       `select * from parking`,
-      [id],
+      [],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
