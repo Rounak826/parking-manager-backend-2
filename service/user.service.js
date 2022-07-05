@@ -198,7 +198,6 @@ module.exports = {
 
   },
   getAllParkings:callBack => {
-    console.log(callBack)
     db.query(
       `select * from parking `,
       [],

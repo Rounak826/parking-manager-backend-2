@@ -397,26 +397,14 @@ module.exports = {
   },
   getAllParking: (req, res) => {
 
-    getAllParkings(
-      (err, results) => {
+    getAllParkings((err, results) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({
-          success: false,
-          message: err.message,
-        });
-      }
-      if(!results) {
-        return res.json({
-          success: false,
-          data: [],
-          message: 'No Records Found.'
-        });
+        return;
       }
       return res.json({
         success: true,
-        data: results,
-        message: 'Records Found.'
+        data: results
       });
     });
 
