@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
@@ -711,7 +711,7 @@ module.exports = {
   //Booking request
 
   sendRequest: (req, res) => {
-    addSlots({ ...req.body}, (err, results) => {
+    addBookingRequest({ ...req.body}, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
