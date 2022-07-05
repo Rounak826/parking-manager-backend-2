@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlotsForInstant, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
@@ -592,7 +592,7 @@ module.exports = {
     const booking_from = req.body.booking_from;
     const booking_till_mills = new Date(booking_till).getTime();
     const booking_from_mills = new Date(booking_from).getTime();
-    getAllEmptySlots2(parking_id, booking_till_mills, booking_from_mills, (err, results) => {
+    getAllEmptySlotsForInstant(parking_id, booking_till_mills, booking_from_mills, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -646,7 +646,7 @@ module.exports = {
     const parking_id = req.decoded.result.user_id
     const body = req.body
     body.booking_till = new Date(body.booking_till).getTime();
-    getAllEmptySlots2(parking_id, body.booking_till, (err, results) => {
+    getAllEmptySlotsForInstant(parking_id, body.booking_till, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -692,7 +692,7 @@ module.exports = {
     const body = req.body
     body.booking_till = new Date(body.booking_till).getTime();
     body.booking_from = new Date(body.booking_from).getTime();
-    getAllEmptySlots2(parking_id, body.booking_till, body.booking_from, (err, results) => {
+    getAllEmptySlotsForInstant(parking_id, body.booking_till, body.booking_from, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -749,7 +749,7 @@ module.exports = {
         message: "No Bookings found"
       });
       let booking = results[0]
-      getAllEmptySlots2(booking.parking_id, booking.booking_till, booking.booking_from, (err, results) => {
+      getAllEmptySlotsForInstant(booking.parking_id, booking.booking_till, booking.booking_from, (err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
