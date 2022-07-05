@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor, getVehicleById } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, updateSlotById, getAllSlots, getAllEmptySlots, getBookingById, addBooking, getAllEmptySlots2, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
@@ -708,12 +708,90 @@ module.exports = {
 
   },
 
+  //Booking request
 
+  sendRequest: (req, res) => {
+    addSlots({ ...req.body}, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      if (results.affectedRows == 0) return res.status(400).json({
+        success: false,
+        message: "Failed To Send Request",
+      });
+      return res.status(200).json({
+        success: true,
+        data: results,
+        message: 'Request Sent Successfully.'
+      });
+    });
+  },
+  updateRequestStatus: (req, res) => {
+    const request_id = req.query.request_id
+    const status = req.query.status
+    updateRequestStatus(request_id,status, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      if (results.affectedRows == 0) return res.status(400).json({
+        success: false,
+        message: "Failed To Update Status",
+      });
+      return res.status(200).json({
+        success: true,
+        data: results,
+        message: 'Request Updated Successfully.'
+      });
+    });
+  },
+  getRequestById: (req, res) => {
 
+    const user_id = req.decoded.result.user_id
+    const role = req.decoded.result.role
+    
+      getRequestById(req.query.request_id, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        if (results.length == 0) {
+          return res.status(404).json({
+            success: true,
+            data: results,
+            message: 'No Request Found'
+          });
+        }
+        if(role==='parking' && user_id == results[0].parking_id){
+          return res.status(200).json({
+            success: true,
+            data: results[0],
+            message: 'Records Found.'
+          });
+        }else if(role==='user' && user_id ==results[0].user_id ){
+          return res.status(200).json({
+            success: true,
+            data: results[0].status,
+            message: 'Records Found.'
+          });
+        }else{
+          return res.status(400).json({
+            success: false,
+            message: 'Unauthorized Data'
+          });
+        }
 
-
-
-
-
+      });
+  }
 };
 

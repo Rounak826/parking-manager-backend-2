@@ -335,7 +335,7 @@ module.exports = {
       }
     );
   },
-  getSlotById: (id,callBack)=>{
+  getSlotById: (id, callBack) => {
     db.query(
       `select * from slots where slot_id=?`,
       [
@@ -365,28 +365,28 @@ module.exports = {
     );
 
   },
-  getAllEmptySlots : (parking_id,booking_till,booking_from, callBack) => {
+  getAllEmptySlots: (parking_id, booking_till, booking_from, callBack) => {
     db.query(
       `select s.slot_id, b.booking_from,b.booking_till, b.user_id from slots s LEFT JOIN bookings b ON s.slot_id = b.slot_id where s.status=0 order by s.slot_id`,
       [
         booking_till,
         parking_id
       ],
-      
+
       (error, results, fields) => {
         if (error) {
           return callBack(error);
         }
         console.log('\ncheck prev booking\n')
-        let filteredResult1 = results.filter((x)=>checkAvaibilityFrom(x.booking_till,booking_from,1))
+        let filteredResult1 = results.filter((x) => checkAvaibilityFrom(x.booking_till, booking_from, 1))
         console.log('\ncheck upcoming booking\n')
-        let filteredResult2 = filteredResult1.filter((x)=>checkAvaibilityTill(x.booking_from,booking_till,1))
+        let filteredResult2 = filteredResult1.filter((x) => checkAvaibilityTill(x.booking_from, booking_till, 1))
         return callBack(null, filteredResult2);
       }
     );
 
   },
-  getAllEmptySlots2 : (parking_id,booking_till,booking_from, callBack) => {
+  getAllEmptySlots2: (parking_id, booking_till, booking_from, callBack) => {
     db.query(
       `select * from slots where slot_id not in (select slot_id from bookings where parking_id=? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) ) order by floor_id , y , x `,
       [
@@ -397,7 +397,7 @@ module.exports = {
         booking_from,
         booking_till,
       ],
-      
+
       (error, results, fields) => {
         if (error) {
           return callBack(error);
@@ -446,10 +446,10 @@ module.exports = {
       }
     );
   },
-  deleteSlotsById: (slot_id,parking_id, callBack) => {
+  deleteSlotsById: (slot_id, parking_id, callBack) => {
     db.query(
       `Delete from slots where slots_id=? and parking_id=?`,
-      [slot_id,parking_id],
+      [slot_id, parking_id],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
@@ -480,7 +480,7 @@ module.exports = {
       }
     );
   },
-  getBookingById: (id,callBack)=>{
+  getBookingById: (id, callBack) => {
     db.query(
       `select * from bookings where booking_id=?`,
       [
@@ -495,7 +495,7 @@ module.exports = {
     );
 
   },
-  getBookingByTime: (parking_id,data,callBack)=>{
+  getBookingByTime: (parking_id, data, callBack) => {
     db.query(
       `select * from bookings where booking_from>? and parking_id=? `,
       [
@@ -509,20 +509,83 @@ module.exports = {
         return callBack(null, results);
       }
     );
-  }
+  },
+
+
+  //Booking Request
+  getRequestById: (id, callBack) => {
+    db.query(
+      `select * from book_request where request_id=?`,
+      [
+        id
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+
+  },
+
+  addBookingRequest: (data, callBack) => {
+    db.query(
+      `insert into book_request(user_id,vehicle_id,parking_id,booking_from,booking_till,status,type) 
+        values(?,?,?,?,?,?,?)`,
+      [
+        data.user_id,
+        data.vehicle_id,
+        data.parking_id,
+        data.booking_from,
+        data.booking_till,
+        data.status,
+        data.type,
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  updateRequestStatus: (status,request_id, callBack) => {
+    db.query(
+      `update book_request set status=? where request_id=?`,
+      [
+
+        status,
+        request_id
+
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+
+
 };
+
+
+
+
 function checkAvaibilityFrom(booking_till, book_from, buffer = 0) {
-  console.log('values:',{booking_till, book_from})
+  console.log('values:', { booking_till, book_from })
   if (!booking_till) return true
 
   let xbt = booking_till;
   let bf = book_from
-  console.log((xbt-bf), (buffer * 60 * 60 * 1000));
-  console.log((xbt-bf)>= (buffer * 60 * 60 * 1000));
-  return (xbt-bf) >= (buffer * 60 * 60 * 1000);
+  console.log((xbt - bf), (buffer * 60 * 60 * 1000));
+  console.log((xbt - bf) >= (buffer * 60 * 60 * 1000));
+  return (xbt - bf) >= (buffer * 60 * 60 * 1000);
 }
 function checkAvaibilityTill(booking_from, book_till, buffer = 0) {
-  console.log('values:',{booking_from, book_till})
+  console.log('values:', { booking_from, book_till })
   if (!booking_from) return true
   let xbf = booking_from
 

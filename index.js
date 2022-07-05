@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser')
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -125,6 +125,12 @@ app.get("/deleteSlotById",checkToken, deleteSlot);
 //bookings
 app.post("/instantBooking",checkToken, InstantBooking);
 app.post("/bookForLater",checkToken, bookForLater);
+
+
+//Booking Request
+app.post("/sendRequest",checkToken, sendRequest);
+app.get("/updateRequestStatus",checkToken,updateRequestStatus)
+app.get("/getRequestById",checkToken,getRequestById)
 
 const port = process.env.PORT || 4000;
 
