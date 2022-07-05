@@ -197,7 +197,7 @@ module.exports = {
     );
 
   },
-  getAllParkings: (callBack) => {
+  getAllParkings: (id,callBack) => {
     db.query(
       `select * from parking`,
       [],
