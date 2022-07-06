@@ -347,7 +347,7 @@ module.exports = {
 
   },
   getAllParkings: (req, res) => {
-    getAllParkings((err, results) => {
+    getAllParkings('id',(err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
