@@ -396,7 +396,7 @@ module.exports = {
     });
   },
   getAllParkings: (req, res) => {
-    getAllParkings('',(err, results) => {
+    getAllParkings((err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -701,9 +701,11 @@ module.exports = {
       }
 
       //reserve 5 slots
+    
       if (results.length > 5) return res.status(400).json({
         success: false,
-        message: "No slots found"
+        message: "No slots found",
+        test: results
       });
       //select 5th available slot from last
       const first_empty_slot = results[results.length-5].slot_id
