@@ -197,10 +197,8 @@ module.exports = {
     );
 
   },
-  getAllParkings: (callBack) => {
-    db.query(
-      `select * from parking`,
-      [],
+  getAllParkingsList: (callBack=(err,results)=>{}) => {
+    db.query(`select * from parking`,[],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
