@@ -530,6 +530,7 @@ module.exports = {
 
   },
   getBookingByTime: (data, callBack) => {
+    console.log({data})
     db.query(
       `select * from bookings where booking_from>? and user_id=? `,
       [
