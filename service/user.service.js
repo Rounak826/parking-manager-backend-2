@@ -197,8 +197,10 @@ module.exports = {
     );
 
   },
-  getAllParkingsList: (callBack) => {
-    db.query(`select * from parking`,[],
+  getAllParkings: (callBack)=>{
+    db.query(
+      `select * from parking`,
+      [],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
@@ -206,8 +208,8 @@ module.exports = {
         return callBack(null, results);
       }
     );
-
   },
+
   updateParkingDetails: (data, callBack) => {
     db.query(
       `update parking set name=?,email=?,mobile=?,mobile2=?,address=?,map=?,image_url=?,rate=?,penalty_rate=?,capacity=?,facilities=?,upi_id=? where parking_id=?`,

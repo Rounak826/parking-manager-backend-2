@@ -346,6 +346,24 @@ module.exports = {
     });
 
   },
+  getAllParkings: (req, res) => {
+    getAllParkings((err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        data: results,
+        message: 'Records Found'
+      });
+    });
+
+
+  },
   updateParkingDetails: (req, res) => {
     const parking_id = req.decoded.result.user_id
 
@@ -395,30 +413,7 @@ module.exports = {
 
     });
   },
-  getAllParkings: (req, res) => {
-    getAllParkingsList((err, results) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).json({
-          success: false,
-          message: err.message,
-        });
-      }
-      if (!results) {
-        return res.json({
-          success: false,
-          data: [],
-          message: 'No Records Found.'
-        });
-      }
-      return res.json({
-        success: true,
-        data: results,
-        message: 'Records Found.'
-      });
-    });
 
-  },
   //floor
   addFloor: (req, res) => {
     const user_id = req.decoded.result.user_id
