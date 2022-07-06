@@ -110,7 +110,7 @@ app.post("/addParking",checkToken, addParking);
 app.post("/updateParkingDetails",checkToken, updateParkingDetails);
 app.get("/deleteParkingById",checkToken, deleteParkingById);
 app.get("/getParkingDetails",checkToken, getParkingDetails);
-
+app.get("/getAllParkings",checkToken, getAllParkings);
 
 //floor
 app.post("/addFloor",checkToken, addFloor);
