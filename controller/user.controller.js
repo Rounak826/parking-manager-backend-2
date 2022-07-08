@@ -340,7 +340,7 @@ module.exports = {
           message: "Image Could not be uploaded"
         });
       }
-      req.body.image_url = req.file.filename
+      req.body.image_url = req.filename
       addParking({ ...req.body, parking_id: user_id }, (err, results) => {
         if (err) {
           console.log(err);
