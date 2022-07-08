@@ -1,7 +1,7 @@
 const mysql = require("mysql");
 
 
-const db_config = {
+const db_config1= {
   host: "remotemysql.com",
   user: "FD2e9bxeWt",
   password: "bccLWKcHPx",
@@ -9,7 +9,14 @@ const db_config = {
   connectionLimit: 50,
   multipleStatements: true
 };
-
+const db_config = {
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "parking_management",
+  connectionLimit: 50,
+  multipleStatements: true
+};
 var db;
 function handleDisconnect() {
   db = mysql.createConnection(db_config); // Recreate the connection, since

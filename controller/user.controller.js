@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParkings, getAllParkingsList } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
@@ -346,24 +346,6 @@ module.exports = {
     });
 
   },
-  getAllParkings: (req, res) => {
-    getAllParkings('id',(err, results) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).json({
-          success: false,
-          message: err.message
-        });
-      }
-      return res.status(200).json({
-        success: true,
-        data: results,
-        message: 'Records Found'
-      });
-    });
-
-
-  },
   updateParkingDetails: (req, res) => {
     const parking_id = req.decoded.result.user_id
 
@@ -412,6 +394,31 @@ module.exports = {
       });
 
     });
+  },
+  getAllParking: (req, res) => {
+
+    getAllParking((err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (!results) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No Records Found.'
+        });
+      }
+      return res.json({
+        success: true,
+        data: results,
+        message: 'Records Found.'
+      });
+    });
+
   },
 
   //floor
