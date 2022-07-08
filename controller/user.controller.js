@@ -2,10 +2,36 @@ const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicl
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
+const storage = multer.diskStorage({
+  destination: (req,file,cb)=>{
+      cb(null,'storage')
+  },
+  filename: (req,file,cb)=>{
+    console.log(file)
+    cb(null,Date.now()+'-'+file.originalname )
+  }
+
+})
+
+const upload = multer({storage: storage}).single('file')
 
 
 
 module.exports = {
+  
+  uploadFile: (req, res) => {
+    if (req.decoded.result.role === 'parking') {
+      upload(req, res, (err) => {
+        if (err) {
+          console.log(err)
+          res.sendStatus(500);
+        }
+        res.send(req.file);
+      })
+    }
+
+
+  },
   //Authentication
   createUser: async (req, res) => {
     const body = req.body;
@@ -305,20 +331,31 @@ module.exports = {
   //parking
   addParking: (req, res) => {
     const user_id = req.decoded.result.user_id
-    addParking({ ...req.body, parking_id: user_id }, (err, results) => {
+    upload(req, res, (err) => {
       if (err) {
-        console.log(err);
+        console.log(err)
         return res.status(500).json({
           success: false,
-          message: err.message
+          message: "Image Could not be uploaded"
         });
       }
-      return res.status(200).json({
-        success: true,
-        data: results,
-        message: 'Parking added Successfully.'
+      req.body.image_url = req.file.filename
+      addParking({ ...req.body, parking_id: user_id }, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          data: results,
+          message: 'Parking added Successfully.'
+        });
       });
-    });
+    })
+
 
 
   },

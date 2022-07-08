@@ -1,10 +1,12 @@
 const db = require("../config/database");
 const moment = require('moment')
-
+const multer = require('multer');
 
 
 
 module.exports = {
+
+
   //authentication
   getUserByemail: (email, callBack) => {
     console.log(email);

@@ -11,19 +11,7 @@ const db = require("./config/database");
 const { checkToken } = require("./auth/token_validation");
 //file upload
 const fs = require('fs')
-const multer = require('multer');
-const storage = multer.diskStorage({
-  destination: (req,file,cb)=>{
-      cb(null,'storage')
-  },
-  filename: (req,file,cb)=>{
-    console.log(file)
-    cb(null,Date.now()+'-'+file.originalname )
-  }
 
-})
-
-const upload = multer({storage: storage}).single('file')
 app.use(cors())
 app.use(express.static('storage'));
 app.get("/", async (req, res) => {
@@ -39,18 +27,7 @@ app.get("/createDatabase",async (req,res)=>{
     res.send("db created");
   })
 })
-app.post("/upload",(req,res)=>{
 
-
-  upload(req, res, (err) => {
-    if (err) {
-      console.log(err)
-      res.sendStatus(500);
-    }
-    res.send(req.file);
-  });
-  
-})
 app.get("/deleteClinicImage",checkToken,(req,res)=>{
   if (req.decoded.result.role === 'admin'||req.decoded.result.role === 'doctor') {
   fs.unlink('./storage/'+req.query.filename, (err) => {
