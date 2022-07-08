@@ -5,8 +5,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser')
 const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
+const multer = require('multer');
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer().array())
 const db = require("./config/database");
 const { checkToken } = require("./auth/token_validation");
 //file upload
