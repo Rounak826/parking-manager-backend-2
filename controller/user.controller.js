@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
@@ -640,7 +640,30 @@ module.exports = {
     });
 
   },
+  getSlotById: (req, res) => {
+    getSlotById(req.query.slot_id, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (!results||results.length===0) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No Records Found.'
+        });
+      }
+      return res.json({
+        success: true,
+        data: results[0],
+        message: 'Records Found.'
+      });
+    });
 
+  },
   //booking
   InstantBooking: (req, res) => {
     const parking_id = req.decoded.result.user_id
@@ -863,6 +886,28 @@ module.exports = {
         success: true,
         data: results,
         message: 'Request Updated Successfully.'
+      });
+    });
+  },
+  allotSlot:(req, res) => {
+    const request_id = req.query.request_id
+    const booking_id = req.query.booking_id
+    updateRequestBooking_id(request_id, booking_id, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      if (results.affectedRows == 0) return res.status(400).json({
+        success: false,
+        message: "Failed To Update Alot Slot",
+      });
+      return res.status(200).json({
+        success: true,
+        data: results,
+        message: 'Slot Alloted Successfully.'
       });
     });
   },

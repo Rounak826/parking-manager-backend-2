@@ -588,7 +588,7 @@ module.exports = {
 
   addBookingRequest: (data, callBack) => {
     db.query(
-      `insert into book_request(user_id,vehicle_id,booking_from,booking_till,status,type) 
+      `insert into book_request(user_id,vehicle_id,booking_from,booking_till,status,booking_id,type) 
         values(?,?,?,?,?,?)`,
       [
         data.user_id,
@@ -596,6 +596,7 @@ module.exports = {
         data.booking_from,
         data.booking_till,
         data.status,
+        data.booking_id,
         data.type,
       ],
       (error, results, fields) => {
@@ -612,6 +613,23 @@ module.exports = {
       [
 
         status,
+        request_id
+
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  updateRequestBooking_id:(booking_id,request_id, callBack) => {
+    db.query(
+      `update book_request set booking_id=? , status=400 where request_id=?`,
+      [
+
+        booking_id,
         request_id
 
       ],
