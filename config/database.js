@@ -1,7 +1,7 @@
 const mysql = require("mysql");
 
 
-const db_config1= {
+const db_config= {
   host: "remotemysql.com",
   user: "FD2e9bxeWt",
   password: "bccLWKcHPx",
@@ -9,7 +9,7 @@ const db_config1= {
   connectionLimit: 50,
   multipleStatements: true
 };
-const db_config = {
+const db_config1 = {
   host: "localhost",
   user: "root",
   password: "",
