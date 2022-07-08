@@ -2,6 +2,7 @@ const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicl
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const db = require("../config/database");
+const multer = require('multer');
 const storage = multer.diskStorage({
   destination: (req,file,cb)=>{
       cb(null,'storage')
