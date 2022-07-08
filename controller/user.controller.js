@@ -839,7 +839,7 @@ module.exports = {
       });
       return res.status(200).json({
         success: true,
-        data: results,
+        data: results.insertId,
         message: 'Request Sent Successfully.'
       });
     });
