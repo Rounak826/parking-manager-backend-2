@@ -2,18 +2,30 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const bodyParser = require('body-parser')
 const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 const multer = require('multer');
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer().array())
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());       
+app.use(bodyParser.urlencoded({ extended: true})); 
 const db = require("./config/database");
 const { checkToken } = require("./auth/token_validation");
 //file upload
 const fs = require('fs')
+const storage = multer.diskStorage({
+  destination: (req,file,cb)=>{
+      cb(null,'storage')
+  },
+  filename: (req,file,cb)=>{
+    if(file){ 
+      cb(null,Date.now()+'-'+file.originalname )
+    } else false
+   
+  }
 
+})
+
+const upload = multer({storage: storage}).single('file')
 app.use(cors())
 app.use(express.static('storage'));
 app.get("/", async (req, res) => {
@@ -84,8 +96,8 @@ app.get("/deleteVehicleById",checkToken, deleteVehicleById);
 app.get("/getVehicle",checkToken, getVehicle);
 
 //parking
-app.post("/addParking",checkToken, addParking);
-app.post("/updateParkingDetails",checkToken, updateParkingDetails);
+app.post("/addParking",checkToken,upload, addParking);
+app.post("/updateParkingDetails",checkToken,upload,updateParkingDetails);
 app.get("/deleteParkingById",checkToken, deleteParkingById);
 app.get("/getParkingDetails",checkToken, getParkingDetails);
 app.get("/getAllParkings",checkToken, getAllParking);

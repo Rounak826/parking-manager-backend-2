@@ -1,38 +1,11 @@
 const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
-const db = require("../config/database");
-const multer = require('multer');
-const storage = multer.diskStorage({
-  destination: (req,file,cb)=>{
-      cb(null,'storage')
-  },
-  filename: (req,file,cb)=>{
-    console.log(file)
-    cb(null,Date.now()+'-'+file.originalname )
-  }
-
-})
-
-const upload = multer({storage: storage}).single('file')
 
 
 
 module.exports = {
-  
-  uploadFile: (req, res) => {
-    if (req.decoded.result.role === 'parking') {
-      upload(req, res, (err) => {
-        if (err) {
-          console.log(err)
-          res.sendStatus(500);
-        }
-        res.send(req.file);
-      })
-    }
 
-
-  },
   //Authentication
   createUser: async (req, res) => {
     const body = req.body;
@@ -332,15 +305,15 @@ module.exports = {
   //parking
   addParking: (req, res) => {
     const user_id = req.decoded.result.user_id
-    upload(req, res, (err) => {
-      if (err) {
-        console.log(err)
-        return res.status(500).json({
-          success: false,
-          message: "Image Could not be uploaded"
-        });
+      console.log(req.body,req.file)
+      if(req.file){
+        req.body.image_url = req.file.filename
       }
-      req.body.image_url = req.filename
+      else{
+        req.body.image_url = ''
+      }
+      
+      
       addParking({ ...req.body, parking_id: user_id }, (err, results) => {
         if (err) {
           console.log(err);
@@ -348,15 +321,16 @@ module.exports = {
             success: false,
             message: err.message
           });
-        }
+        }   
         return res.status(200).json({
           success: true,
           data: results,
           message: 'Parking added Successfully.'
         });
-      });
-    })
 
+          
+         
+        })
 
 
   },
@@ -386,7 +360,9 @@ module.exports = {
   },
   updateParkingDetails: (req, res) => {
     const parking_id = req.decoded.result.user_id
-
+    if(req.file){
+      req.body.image_url = req.file.filename
+    }
     updateParkingDetails({ ...req.body, parking_id }, (err, results) => {
       if (err) {
         console.log(err);
