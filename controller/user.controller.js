@@ -739,6 +739,7 @@ module.exports = {
         return res.status(200).json({
           success: true,
           data: results.insertId,
+          slot_id: first_empty_slot,
           message: 'Slot Booked Successfully'
         });
 
