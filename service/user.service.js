@@ -462,7 +462,7 @@ module.exports = {
   },
   updateSlotById: (data, callBack) => {
     db.query(
-      `update slots set floor_id=?,row=?,col=?,status=?,occupied_till=?,user_id=?,specially_abled_friendly=? where floor_id=? and parking_id=?,`,
+      `update slots set floor_id=?,row=?,col=?,status=?,occupied_till=?,user_id=?,specially_abled_friendly=? where floor_id=? and parking_id=? and slot_id=?`,
       [
 
         data.floor_id,
@@ -474,6 +474,24 @@ module.exports = {
         data.specially_abled_friendly,
         data.floor_id,
         data.parking_id,
+        data.slot_id
+
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  updateSlotStatusById: (data, callBack) => {
+    db.query(
+      `update slots set status=? where parking_id=? and slot_id=?`,
+      [
+        data.status,
+        data.parking_id,
+        data.slot_id
 
       ],
       (error, results, fields) => {

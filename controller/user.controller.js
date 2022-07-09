@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 
@@ -619,7 +619,7 @@ module.exports = {
         success: false,
         message: "No slots found"
       });
-
+      
 
       return res.status(200).json({
         success: true,
@@ -678,6 +678,31 @@ module.exports = {
     });
 
   },
+  updateSlotStatus:(req, res) => {
+    let parking_id = req.decoded.result.user_id
+    updateSlotStatusById({slot_id:req.query.slot_id,status:req.query.status,parking_id}, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (results.affectedRows==0) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'Failed to update Slot Status'
+        });
+      }
+      return res.json({
+        success: true,
+        data: results[0],
+        message: 'Slot Status Updated.'
+      });
+    });
+
+  },
   //booking
   InstantBooking: (req, res) => {
     const parking_id = req.decoded.result.user_id
@@ -713,7 +738,7 @@ module.exports = {
 
         return res.status(200).json({
           success: true,
-          data: first_empty_slot,
+          data: results.insertId,
           message: 'Slot Booked Successfully'
         });
 
@@ -857,6 +882,59 @@ module.exports = {
     });
 
   },
+  BookedSlotStatus: (req, res) => {
+    let booking_id= req.query.booking_id
+    getBookingById( booking_id , (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (!results||results.length==0) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No Bookings Found.'
+        });
+      }
+      getSlotById(results[0].slot_id,(err, slotResults) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message,
+          });
+
+        }
+        if (!slotResults||slotResults.length==0) {
+          return res.status(400).json({
+            success: false,
+            data: [],
+            message: 'No Slot Found.'
+          });
+        }
+        console.log(slotResults[0])
+        if(slotResults[0].status=='free'){
+          return res.status(200).json({
+            success: true,
+            data: true,
+            message: 'Records Found.'
+          });
+        }else{
+          return res.status(400).json({
+            success: false,
+            data: false,
+            message: 'Slot occupied'
+          });
+        }
+      })
+     
+    });
+
+  },
+  
 
   //Booking request
 

@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 const multer = require('multer');
 const bodyParser = require('body-parser');
@@ -114,6 +114,8 @@ app.post("/getAvailableSlot",checkToken, getAvailableSlots);
 app.get("/getSlotsByFloor",checkToken, getSlotsByFloor);
 app.get("/deleteSlotById",checkToken, deleteSlot);
 app.get("/getSlotById",checkToken, getSlotById);
+app.get("/updateSlotStatus",checkToken, updateSlotStatus);
+
 //bookings
 app.post("/instantBooking",checkToken, InstantBooking);
 app.post("/bookForLater",checkToken, bookForLater);
@@ -124,7 +126,7 @@ app.post("/sendRequest",checkToken, sendRequest);
 app.get("/updateRequestStatus",checkToken,updateRequestStatus)
 app.get("/allotSlot",checkToken,allotSlot)
 app.get("/getRequestById",checkToken,getRequestById)
-
+app.get("/BookedSlotStatus", checkToken, BookedSlotStatus)
 const port = process.env.PORT || 4000;
 
 
