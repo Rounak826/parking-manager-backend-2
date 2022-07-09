@@ -862,6 +862,7 @@ module.exports = {
 
   sendRequest: (req, res) => {
     const user_id = req.decoded.result.user_id
+    if(req.body.type==0) req.body.booking_id =' '
     addBookingRequest({ ...req.body, user_id }, (err, results) => {
       if (err) {
         console.log(err);
