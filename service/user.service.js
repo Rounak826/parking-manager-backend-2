@@ -516,17 +516,19 @@ module.exports = {
   },
 
   //booking
-  addBooking: (data, callBack) => {
+  addBooking: (data,instant, callBack) => {
     db.query(
       `insert into bookings(parking_id,slot_id,user_id,vehicle_id,booking_from,booking_till) 
-        values(?,?,?,?,?,?)`,
+        values(?,?,?,?,?,?);update slots set status=? where slot_id=?`,
       [
         data.parking_id,
         data.slot_id,
         data.user_id,
         data.vehicle_id,
         data.booking_from,
-        data.booking_till
+        data.booking_till,
+        'booked',
+        instant?data.slot_id:'-' 
       ],
       (error, results, fields) => {
         if (error) {

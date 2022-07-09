@@ -723,7 +723,7 @@ module.exports = {
       });
       const first_empty_slot = results[0].slot_id
       const booking_from = new Date().getTime()
-      addBooking({ parking_id, slot_id: first_empty_slot, ...body, booking_from }, (err, results) => {
+      addBooking({ parking_id, slot_id: first_empty_slot, ...body, booking_from },true, (err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -773,7 +773,7 @@ module.exports = {
       //select 5th available slot from last
       const first_empty_slot = results[results.length - 5].slot_id
 
-      addBooking({ user_id, slot_id: first_empty_slot, ...body, booking_from: body.booking_from }, (err, results) => {
+      addBooking({ user_id, slot_id: first_empty_slot, ...body, booking_from: body.booking_from },false, (err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
