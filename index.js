@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 const multer = require('multer');
 const bodyParser = require('body-parser');
@@ -120,7 +120,7 @@ app.get("/updateSlotStatus",checkToken, updateSlotStatus);
 app.post("/instantBooking",checkToken, InstantBooking);
 app.post("/bookForLater",checkToken, bookForLater);
 app.get("/userBookings",checkToken, getUserBookings);
-
+app.get("/updateBooking",checkToken, updateBooking);
 //Booking Request
 app.post("/sendRequest",checkToken, sendRequest);
 app.get("/updateRequestStatus",checkToken,updateRequestStatus)

@@ -814,6 +814,7 @@ module.exports = {
         message: "No Bookings found"
       });
       let booking = results[0]
+      console.log(booking.booking_id);
       getAllEmptySlotsForInstant(booking.parking_id, booking.booking_till, booking.booking_from, (err, results) => {
         if (err) {
           console.log(err);
@@ -916,11 +917,11 @@ module.exports = {
             message: 'No Slot Found.'
           });
         }
-        console.log(slotResults[0])
         if(slotResults[0].status=='free'){
           return res.status(200).json({
             success: true,
             data: true,
+            slot_id: results[0].slot_id,
             message: 'Records Found.'
           });
         }else{
@@ -964,7 +965,7 @@ module.exports = {
   updateRequestStatus: (req, res) => {
     const request_id = req.query.request_id
     const status = req.query.status
-    updateRequestStatus(request_id, status, (err, results) => {
+    updateRequestStatus(status, request_id, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -972,7 +973,6 @@ module.exports = {
           message: err.message
         });
       }
-      console.log(results)
       if (results.affectedRows == 0) return res.status(400).json({
         success: false,
         message: "Failed To Update Status",
@@ -987,7 +987,7 @@ module.exports = {
   allotSlot:(req, res) => {
     const request_id = req.query.request_id
     const booking_id = req.query.booking_id
-    updateRequestBooking_id(request_id, booking_id, (err, results) => {
+    updateRequestBooking_id(booking_id, request_id, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -999,6 +999,7 @@ module.exports = {
         success: false,
         message: "Failed To Update Alot Slot",
       });
+      console.log(results)
       return res.status(200).json({
         success: true,
         data: results,
