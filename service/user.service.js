@@ -426,7 +426,7 @@ module.exports = {
   },
   getAllEmptySlotsForInstant: (parking_id, booking_till, booking_from, callBack) => {
     db.query(
-      `select * from slots where slot_id not in (select slot_id from bookings where parking_id=? and status<>'free' and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) ) order by floor_id , y , x `,
+      `select * from slots where slot_id not in (select slot_id from bookings where parking_id=?  and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) or status<>'free' )  order by floor_id , y , x `,
       [
 
         parking_id,
@@ -540,7 +540,7 @@ module.exports = {
   },
   getBookingById: (id, callBack) => {
     db.query(
-      `select bookings.*, slots.status from bookings INNER JOIN ON slots where booking_id=?`,
+      `select bookings.*, slots.status from bookings INNER JOIN slots ON bookings.slot_id = slots.slot_id where booking_id=?`,
       [
         id
       ],
@@ -572,7 +572,7 @@ module.exports = {
   updateBooking: (data, callBack) => {
     console.log(data.booking_id)
     db.query(
-      `update bookings set slot_id=?,vehicle_id=?,booking_from=?,booking_till=?  where booking_id=?;update slots set status='occupied' where slot_id=?`,
+      `update bookings set slot_id=?,vehicle_id=?,booking_from=?,booking_till=?  where booking_id=?;update slots set status='booked' where slot_id=?`,
       [
 
         data.slot_id,

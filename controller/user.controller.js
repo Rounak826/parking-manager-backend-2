@@ -917,6 +917,7 @@ module.exports = {
             message: 'No Slot Found.'
           });
         }
+        console.log(slotResults)
         if(slotResults[0].status=='free'){
           return res.status(200).json({
             success: true,
@@ -1027,7 +1028,7 @@ module.exports = {
           message: 'No Request Found'
         });
       }
-      console.log({ user_id, role }, results[0])
+      console.log({req_id: req.query.request_id, user_id, role }, results[0])
       if (role === 'parking') {
         return res.status(200).json({
           success: true,
