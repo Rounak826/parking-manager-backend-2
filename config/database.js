@@ -1,7 +1,7 @@
 const mysql = require("mysql");
 
 
-const db_config= {
+const db_config1= {
   host: "remotemysql.com",
   user: "FD2e9bxeWt",
   password: "bccLWKcHPx",
@@ -9,7 +9,15 @@ const db_config= {
   connectionLimit: 50,
   multipleStatements: true
 };
-const db_config1 = {
+const db_config = {
+  host: "sql6.freemysqlhosting.net",
+  user: "sql6505187",
+  password: "ys3eF9Eegq",
+  database: "sql6505187",
+  connectionLimit: 50,
+  multipleStatements: true
+};
+const db_config2 = {
   host: "localhost",
   user: "root",
   password: "",

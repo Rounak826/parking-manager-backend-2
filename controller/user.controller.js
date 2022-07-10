@@ -731,14 +731,14 @@ module.exports = {
             message: err.message
           });
         }
-        if (results.affectedRows == 0) return res.status(400).json({
+        if (results[0].affectedRows == 0) return res.status(400).json({
           success: false,
           message: "Failed To Book Slot",
         });
 
         return res.status(200).json({
           success: true,
-          data: results.insertId,
+          data: results[0].insertId,
           slot_id: first_empty_slot,
           message: 'Slot Booked Successfully'
         });
@@ -972,13 +972,14 @@ module.exports = {
           message: err.message
         });
       }
+      console.log(results)
       if (results.affectedRows == 0) return res.status(400).json({
         success: false,
         message: "Failed To Update Status",
       });
       return res.status(200).json({
         success: true,
-        data: results,
+        data: results[0],
         message: 'Request Updated Successfully.'
       });
     });
