@@ -1,7 +1,13 @@
 const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
+const shortid = require("shortid");
+const Razorpay = require("razorpay");
 
+const razorpay = new Razorpay({
+  key_id: 'rzp_test_gEFzXsl80uOouW',
+  key_secret: "BVzkyBKriCxFaTsFDrxLcFny",
+});
 
 
 module.exports = {
@@ -1053,6 +1059,10 @@ module.exports = {
     });
   },
   checkout:(req, res) => {
+    //razorpay constants
+    const payment_capture = 1;
+    const currency = "INR";
+   
     const booking_id = req.query.booking_id
     const date = new Date()
     //current time with 10 min allowance
@@ -1101,9 +1111,9 @@ module.exports = {
         charge = duration*rate
         if(booking[0].booking_till<current_time){ 
             extra =(current_time - parseInt(booking[0].booking_from))-duration
-            penalty = extra*penalty_rate
+            penalty = extra/(1000*60*60)*penalty_rate
         }
-        checkout({checkout:current_time,charge,penalty,booking_id,slot_id }, (err, results) => {
+        checkout({checkout:current_time,charge,penalty,booking_id,slot_id }, async (err, results) => {
           if (err) {
             console.log(err);
             return res.status(500).json({
@@ -1115,11 +1125,27 @@ module.exports = {
             success: false,
             message: "Failed To Checout",
           });
-          return res.status(200).json({
-            success: true,
-            data: results,
-            message: 'Request Updated Successfully.'
-          });
+          try {
+            const options = {
+              amount: (charge+penalty) * 100,
+              currency,
+              receipt: shortid.generate(),
+              payment_capture,
+            };
+            const response = await razorpay.orders.create(options);
+            console.log(response);
+            res.json({
+              id: response.id,
+              currency: response.currency,
+              amount: response.amount,
+            });
+          } catch (error) {
+            console.log(error);
+            res.status(500).json({
+              success: false,
+              message: error.description
+            })
+          }
         });
   
       })
