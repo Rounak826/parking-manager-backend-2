@@ -708,7 +708,8 @@ module.exports = {
     const parking_id = req.decoded.result.user_id
     const body = req.body
     body.booking_till = new Date(body.booking_till).getTime();
-    body.booking_from = new Date().getTime()
+    const date = new Date()
+    body.booking_from = date.getTime()
     getAllEmptySlotsForInstant(parking_id, body.booking_till, body.booking_from, (err, results) => {
       if (err) {
         console.log(err);
