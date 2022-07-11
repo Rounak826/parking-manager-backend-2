@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 
@@ -937,6 +937,7 @@ module.exports = {
     });
 
   },
+
   
 
   //Booking request
@@ -1049,6 +1050,82 @@ module.exports = {
       }
 
     });
-  }
+  },
+  checkout:(req, res) => {
+    const booking_id = req.query.booking_id
+    const date = new Date()
+    //current time with 10 min allowance
+    const current_time = date.getTime()+ 10*60*60*1000
+    let rate = 0
+    let charge = 0
+    let penalty_rate = 0
+    let penalty = 0
+    let duration =0
+    let extra = 0
+    let slot_id = ''
+    getParkingDetails(req.decoded.result.user_id,(err,parking)=>{
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      if(!parking){
+        return res.status(500).json({
+          success: false,
+          message: "Parking Details not found"
+        });
+      }
+      rate =parseInt(parking.rate) 
+      penalty_rate =parseInt(parking.penalty_rate)
+      getBookingById(booking_id,(err, booking) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message
+          });
+        }
+        if(!booking){
+          return res.status(500).json({
+            success: false,
+            message: "Parking Details not found"
+          });
+        }
+        slot_id = booking[0].slot_id
+        console.log(booking[0])
+        duration =parseInt( booking[0].booking_till)- parseInt(booking[0].booking_from)
+        duration = duration/(1000*60*60)
+        charge = duration*rate
+        if(booking[0].booking_till<current_time){ 
+            extra =(current_time - parseInt(booking[0].booking_from))-duration
+            penalty = extra*penalty_rate
+        }
+        checkout({checkout:current_time,charge,penalty,booking_id,slot_id }, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: false,
+              message: err.message
+            });
+          }
+          if (results.affectedRows == 0) return res.status(400).json({
+            success: false,
+            message: "Failed To Checout",
+          });
+          return res.status(200).json({
+            success: true,
+            data: results,
+            message: 'Request Updated Successfully.'
+          });
+        });
+  
+      })
+
+    })
+
+
+  },
 };
 

@@ -590,6 +590,28 @@ module.exports = {
       }
     );
   },
+  checkout:(data, callBack) => {
+    console.log(data.booking_id)
+    db.query(
+      `update slots set status=? where slot_id=?;update bookings SET checkout=?,charge=?,penalty=? 
+        where booking_id=?`,
+      [
+        'free',
+        data.slot_id ,
+        data.checkout,
+        data.charge,
+        data.penalty,
+        data.booking_id,
+
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
 
 
   //Booking Request
@@ -612,14 +634,14 @@ module.exports = {
   addBookingRequest: (data, callBack) => {
     db.query(
       `insert into book_request(user_id,vehicle_id,booking_from,booking_till,status,booking_id,type) 
-        values(?,?,?,?,?,?)`,
+        values(?,?,?,?,?,?,?)`,
       [
         data.user_id,
         data.vehicle_id,
         data.booking_from,
         data.booking_till,
         data.status,
-        data.booking_id,
+        data.type==0?'':data.booking_id,
         data.type,
       ],
       (error, results, fields) => {
