@@ -61,6 +61,7 @@ module.exports = {
               success: true,
               message: "Signup successful",
               token: jsontoken,
+              user_id: results.user_id
             });
           });
 
@@ -98,6 +99,7 @@ module.exports = {
           success: true,
           message: "login successful",
           token: jsontoken,
+          user_id: results.user_id
         });
       } else {
         return res.status(406).json({
@@ -1104,14 +1106,14 @@ module.exports = {
             message: "Parking Details not found"
           });
         }
+        console.log(booking)
         slot_id = booking[0].slot_id
-        console.log(booking[0])
         duration =parseInt( booking[0].booking_till)- parseInt(booking[0].booking_from)
         duration = duration/(1000*60*60)
         charge = duration*rate
         if(booking[0].booking_till<current_time){ 
             extra =(current_time - parseInt(booking[0].booking_from))-duration
-            penalty = extra/(1000*60*60)*penalty_rate
+            penalty = extra/(1000*60*60)*parseInt(penalty_rate)
         }
         checkout({checkout:current_time,charge,penalty,booking_id,slot_id }, async (err, results) => {
           if (err) {
@@ -1126,6 +1128,7 @@ module.exports = {
             message: "Failed To Checout",
           });
           try {
+            console.log(charge,penalty)
             const options = {
               amount: (charge+penalty) * 100,
               currency,
@@ -1133,7 +1136,6 @@ module.exports = {
               payment_capture,
             };
             const response = await razorpay.orders.create(options);
-            console.log(response);
             res.json({
               id: response.id,
               currency: response.currency,
