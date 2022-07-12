@@ -1061,9 +1061,6 @@ module.exports = {
     });
   },
   checkout:(req, res) => {
-    //razorpay constants
-    const payment_capture = 1;
-    const currency = "INR";
    
     const booking_id = req.query.booking_id
     const date = new Date()
@@ -1127,27 +1124,13 @@ module.exports = {
             success: false,
             message: "Failed To Checout",
           });
-          try {
-            console.log(charge,penalty)
-            const options = {
-              amount: (charge+penalty) * 100,
-              currency,
-              receipt: shortid.generate(),
-              payment_capture,
-            };
-            const response = await razorpay.orders.create(options);
-            res.json({
-              id: response.id,
-              currency: response.currency,
-              amount: response.amount,
-            });
-          } catch (error) {
-            console.log(error);
-            res.status(500).json({
-              success: false,
-              message: error.description
-            })
-          }
+
+          return res.status(200).json({
+            success:false,
+            data: results,
+            message: "Bill generated"
+          })
+          
         });
   
       })
@@ -1155,6 +1138,56 @@ module.exports = {
     })
 
 
+  },
+  pay:(req, res) => {
+     //razorpay constants
+     const payment_capture = 1;
+     const currency = "INR";
+    getBookingById(req.query.booking_id,async (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      if (!results||results.length==0) return res.status(400).json({
+        success: false,
+        message: "No booking info found",
+      });
+      console.log({res:results[0]})
+      if(!results[0].charge||!results[0].checkout){
+        return res.status(400).json({
+          success: false,
+          message: "checkout not done!",
+        });
+      }
+      let charge = parseInt(results[0].charge)  
+      let penalty = parseInt (results[0].penalty)||0
+      
+      try {
+        console.log(charge,penalty)
+        const options = {
+          amount: (charge+penalty) * 100,
+          currency,
+          receipt: shortid.generate(),
+          payment_capture,
+        };
+        const response = await razorpay.orders.create(options);
+        res.json({
+          id: response.id,
+          currency: response.currency,
+          amount: response.amount,
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({
+          success: false,
+          message: error.description
+        })
+      }
+      
+    });
   },
 };
 
