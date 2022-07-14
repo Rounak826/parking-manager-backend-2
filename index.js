@@ -135,7 +135,7 @@ app.post('/verification', (req, res) => {
 	// do a validation
 	const secret = 'STR@12345'
 
-	console.log(req.body)
+	console.log(req.body.payload.payment.entity)
 
 	const crypto = require('crypto')
 
