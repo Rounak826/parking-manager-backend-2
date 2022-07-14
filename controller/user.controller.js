@@ -954,13 +954,13 @@ module.exports = {
   sendRequest: (req, res) => {
     const user_id = req.decoded.result.user_id
     const date = new Date()
-    body.booking_till = new Date(body.booking_till).getTime();
+    req.body.booking_till = new Date(req.body.booking_till).getTime();
 
     if(req.body.type==0){ 
       req.body.booking_id =' '
       req.body.booking_from = date.getTime()
     }else{
-      body.booking_from = new Date(body.booking_from).getTime();
+      req.body.booking_from = new Date(req.body.booking_from).getTime();
     }
     addBookingRequest({ ...req.body, user_id }, (err, results) => {
       if (err) {
