@@ -561,7 +561,7 @@ module.exports = {
 
   //slots
   addSlot: (req, res) => {
-    const data = JSON.parse(req.body.slots)
+    const data =JSON.parse(req.body.slots)
     addSlots(data, (err, results) => {
       if (err) {
         console.log(err);

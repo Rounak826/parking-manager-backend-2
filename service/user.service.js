@@ -333,12 +333,13 @@ module.exports = {
 
   //slots
   addSlots: (data, callBack) => {
+    const rows = data.map(x=>Object.values(JSON.parse(x)))
     db.query(
       `insert into slots(parking_id,floor_id,y,x,specially_abled_friendly,type) 
         values ?`,
-      [
-        data&&data.length>0?data.map(x=>Object.values(data)):[]
-      ],
+        [rows]
+        
+      ,
       (error, results, fields) => {
         if (error) {
           return callBack(error);
