@@ -133,7 +133,7 @@ app.get("/checkout", checkToken, checkout)
 app.get("/pay", checkToken, pay)
 app.post('/verification', (req, res) => {
 	// do a validation
-	const secret = '12345678'
+	const secret = 'STR@12345'
 
 	console.log(req.body)
 
@@ -151,6 +151,7 @@ app.post('/verification', (req, res) => {
 		
 	} else {
 		// reject it
+    console.log('request is illegit')
 	}
 	res.json({ status: 'ok' })
 })
