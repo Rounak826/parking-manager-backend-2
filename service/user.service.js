@@ -337,7 +337,7 @@ module.exports = {
       `insert into slots(parking_id,floor_id,y,x,specially_abled_friendly,type) 
         values ?`,
       [
-        data&&data.length>0&&data.map(x=>Object.values(data))
+        data&&data.length>0?data.map(x=>Object.values(data)):[]
       ],
       (error, results, fields) => {
         if (error) {
