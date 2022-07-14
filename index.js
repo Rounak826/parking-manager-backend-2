@@ -131,6 +131,30 @@ app.get("/BookedSlotStatus", checkToken, BookedSlotStatus)
 //checkout
 app.get("/checkout", checkToken, checkout)
 app.get("/pay", checkToken, pay)
+app.post('/verification', (req, res) => {
+	// do a validation
+	const secret = '12345678'
+
+	console.log(req.body)
+
+	const crypto = require('crypto')
+
+	const shasum = crypto.createHmac('sha256', secret)
+	shasum.update(JSON.stringify(req.body))
+	const digest = shasum.digest('hex')
+
+	console.log(digest, req.headers['x-razorpay-signature'])
+
+	if (digest === req.headers['x-razorpay-signature']) {
+		console.log('request is legit')
+		// process it
+		
+	} else {
+		// reject it
+	}
+	res.json({ status: 'ok' })
+})
+
 const port = process.env.PORT || 4000;
 
 

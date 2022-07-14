@@ -953,7 +953,15 @@ module.exports = {
 
   sendRequest: (req, res) => {
     const user_id = req.decoded.result.user_id
-    if(req.body.type==0) req.body.booking_id =' '
+    const date = new Date()
+    body.booking_till = new Date(body.booking_till).getTime();
+
+    if(req.body.type==0){ 
+      req.body.booking_id =' '
+      req.body.booking_from = date.getTime()
+    }else{
+      body.booking_from = new Date(body.booking_from).getTime();
+    }
     addBookingRequest({ ...req.body, user_id }, (err, results) => {
       if (err) {
         console.log(err);
@@ -1103,13 +1111,13 @@ module.exports = {
             message: "Parking Details not found"
           });
         }
-        console.log(booking)
         slot_id = booking[0].slot_id
         duration =parseInt( booking[0].booking_till)- parseInt(booking[0].booking_from)
         duration = duration/(1000*60*60)
         charge = duration*rate
-        if(booking[0].booking_till<current_time){ 
-            extra =(current_time - parseInt(booking[0].booking_from))-duration
+        console.log(booking[0].checkout,current_time)
+        if(booking[0].checkout>current_time){ 
+            extra =(current_time - parseInt(booking[0].checkout))-duration
             penalty = extra/(1000*60*60)*parseInt(penalty_rate)
         }
         checkout({checkout:current_time,charge,penalty,booking_id,slot_id }, async (err, results) => {
@@ -1126,7 +1134,7 @@ module.exports = {
           });
 
           return res.status(200).json({
-            success:false,
+            success:true,
             data: results,
             message: "Bill generated"
           })
@@ -1189,5 +1197,6 @@ module.exports = {
       
     });
   },
+  
 };
 
