@@ -481,6 +481,23 @@ module.exports = {
       }
     );
   },
+  updateSlotTypeById: (data, callBack) => {
+    db.query(
+      `update slots set type=? where parking_id=? and slot_id=?`,
+      [
+        data.status,
+        data.parking_id,
+        data.slot_id
+
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
   updateSlotStatusById: (data, callBack) => {
     db.query(
       `update slots set status=? where parking_id=? and slot_id=?`,

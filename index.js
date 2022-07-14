@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay, updateSlotType} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 const multer = require('multer');
 const bodyParser = require('body-parser');
@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true}));
 const db = require("./config/database");
 const { checkToken } = require("./auth/token_validation");
 //file upload
-const fs = require('fs')
+const fs = require('fs');
 const storage = multer.diskStorage({
   destination: (req,file,cb)=>{
       cb(null,'storage')
@@ -115,7 +115,7 @@ app.get("/getSlotsByFloor",checkToken, getSlotsByFloor);
 app.get("/deleteSlotById",checkToken, deleteSlot);
 app.get("/getSlotById",checkToken, getSlotById);
 app.get("/updateSlotStatus",checkToken, updateSlotStatus);
-
+app.get("/updateSlotType",checkToken, updateSlotType);
 //bookings
 app.post("/instantBooking",checkToken, InstantBooking);
 app.post("/bookForLater",checkToken, bookForLater);

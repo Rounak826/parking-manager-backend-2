@@ -711,6 +711,31 @@ module.exports = {
     });
 
   },
+  updateSlotType:(req, res) => {
+    let parking_id = req.decoded.result.user_id
+    updateSlotTypeById({slot_id:req.query.slot_id,status:req.query.type,parking_id}, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (results.affectedRows==0) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'Failed to update Slot Type'
+        });
+      }
+      return res.json({
+        success: true,
+        data: results[0],
+        message: 'Slot Type Updated.'
+      });
+    });
+
+  },
   //booking
   InstantBooking: (req, res) => {
     const parking_id = req.decoded.result.user_id
@@ -953,16 +978,13 @@ module.exports = {
 
   sendRequest: (req, res) => {
     const user_id = req.decoded.result.user_id
-    const date = new Date()
-    const booking_till= new Date(req.body.booking_till)
-    req.body.booking_till = booking_till.getTime();
-
+    
     if(req.body.type==0){ 
+      const date = new Date()
       req.body.booking_id =' '
       req.body.booking_from = date.getTime()
-    }else{
-      const booking_from = new Date(req.body.booking_from)
-      req.body.booking_from = booking_from.getTime();
+      const booking_till= new Date(req.body.booking_till)
+      req.body.booking_till = booking_till.getTime();
     }
     console.log(req.body)
     addBookingRequest({ ...req.body, user_id }, (err, results) => {
