@@ -561,8 +561,8 @@ module.exports = {
 
   //slots
   addSlot: (req, res) => {
-    const user_id = req.decoded.result.user_id
-    addSlots({ ...req.body, parking_id: user_id }, (err, results) => {
+    const data = JSON.parse(req.body)
+    addSlots(data, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
