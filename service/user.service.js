@@ -740,7 +740,7 @@ module.exports = {
   },
   getAllParkingTransaction:(parking_id, callBack) => {
     db.query(
-      `select transactions.*, user.name, user.mobile, user.email from transactions inner join user on transactions.user_id = user.user_id where parking_id = ? and payment_id<>null `,
+      `select transactions.*, user.name, user.mobile, user.email from transactions inner join user on transactions.user_id = user.user_id where parking_id = ? and payment_id IS NOT NULL `,
       [
         parking_id
       ],
