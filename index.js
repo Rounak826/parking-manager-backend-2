@@ -150,8 +150,8 @@ app.post('/verification', (req, res) => {
 		console.log('request is legit')
 		// process it
     const date = new Date()
-    const timeStamp = date.getTime()
-    updateTransaction({payment_id:transaction.id,method:transaction.method, order_id: transaction.order_id,timeStamp }, (err,results)=>{
+    const timestamp = date.getTime()
+    updateTransaction({payment_id:transaction.id,method:transaction.method, order_id: transaction.order_id,timestamp }, (err,results)=>{
       console.log(err,results)
     })
 		
