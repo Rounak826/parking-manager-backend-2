@@ -824,6 +824,7 @@ module.exports = {
         return res.status(200).json({
           success: true,
           data: first_empty_slot,
+          booking_id: results.insertId,
           message: 'Slot Booked Successfully'
         });
 
