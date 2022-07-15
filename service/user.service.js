@@ -723,7 +723,7 @@ module.exports = {
   },
   updateTransaction:(data, callBack) => {
     db.query(
-      `update transactions method=?,payment_id=? where order_id=?`,
+      `update transactions set method=?,payment_id=? where order_id=?`,
       [
         data.method,
         data.payment_id,
