@@ -816,7 +816,7 @@ module.exports = {
             message: err.message
           });
         }
-        if (results.affectedRows == 0) return res.status(400).json({
+        if (results[0].affectedRows == 0) return res.status(400).json({
           success: false,
           message: "Failed To Book Slot",
         });
@@ -824,7 +824,7 @@ module.exports = {
         return res.status(200).json({
           success: true,
           data: first_empty_slot,
-          booking_id: results.insertId,
+          booking_id: results[0].insertId,
           message: 'Slot Booked Successfully'
         });
 
