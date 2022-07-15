@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const shortid = require("shortid");
@@ -1093,6 +1093,8 @@ module.exports = {
 
     });
   },
+
+  //checkout
   checkout:(req, res) => {
    
     const booking_id = req.query.booking_id
@@ -1176,6 +1178,8 @@ module.exports = {
      //razorpay constants
      const payment_capture = 1;
      const currency = "INR";
+     const user_id = req.decoded.result.user_id
+
     getBookingById(req.query.booking_id,async (err, results) => {
       if (err) {
         console.log(err);
@@ -1188,7 +1192,6 @@ module.exports = {
         success: false,
         message: "No booking info found",
       });
-      console.log({res:results[0]})
       if(!results[0].charge||!results[0].checkout){
         return res.status(400).json({
           success: false,
@@ -1207,11 +1210,26 @@ module.exports = {
           payment_capture,
         };
         const response = await razorpay.orders.create(options);
-        res.json({
-          id: response.id,
-          currency: response.currency,
-          amount: response.amount,
-        });
+        addTransaction({order_id:response.id,user_id,receipt_id: options.receipt,parking_id: results[0].parking_id,booking_id:results[0].booking_id, amount:response.amount,currency: response.currency  }, (err, results) => {
+          if(err){
+            console.log(err)
+            return res.status(500).json({
+              success: false,
+              message: "failed to generate bill",
+              error: err
+            })
+
+          }
+          res.status(200).json({
+            success: true,
+            message:"bill generated",
+            id: response.id,
+            currency: response.currency,
+            amount: response.amount,
+          });
+          
+        })
+        
       } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -1222,6 +1240,9 @@ module.exports = {
       
     });
   },
+
+  //transactions
+
   
 };
 

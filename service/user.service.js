@@ -697,6 +697,60 @@ module.exports = {
       }
     );
   },
+  //Transactions
+
+  addTransaction:(data, callBack) => {
+    console.log(data)
+    db.query(
+      `insert into transactions(order_id,receipt_id,user_id,parking_id,booking_id,amount,currency) 
+        values(?,?,?,?,?,?,?)`,
+      [
+        data.order_id,
+        data.receipt_id,
+        data.user_id,
+        data.parking_id,
+        data.booking_id,
+        data.amount,
+        data.currency,
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  updateTransaction:(data, callBack) => {
+    db.query(
+      `update transactions method=?,payment_id=? where order_id=?`,
+      [
+        data.method,
+        data.payment_id,
+        data.order_id
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  getAllParkingTransaction:(parking_id, callBack) => {
+    db.query(
+      `select transaction.*, user.name, user.mobile, user.email from transaction inner join user on transaction.user_id = user.user_id where parking_id = ?`,
+      [
+        parking_id
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
 
 
 };

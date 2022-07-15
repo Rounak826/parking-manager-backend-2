@@ -12,6 +12,7 @@ const db = require("./config/database");
 const { checkToken } = require("./auth/token_validation");
 //file upload
 const fs = require('fs');
+const { updateTransaction } = require("./service/user.service");
 const storage = multer.diskStorage({
   destination: (req,file,cb)=>{
       cb(null,'storage')
@@ -135,8 +136,8 @@ app.post('/verification', (req, res) => {
 	// do a validation
 	const secret = 'STR@12345'
 
-	console.log(req.body.payload.payment.entity)
-
+	
+  const transaction = req.body.payload.payment.entity
 	const crypto = require('crypto')
 
 	const shasum = crypto.createHmac('sha256', secret)
@@ -148,6 +149,9 @@ app.post('/verification', (req, res) => {
 	if (digest === req.headers['x-razorpay-signature']) {
 		console.log('request is legit')
 		// process it
+    updateTransaction({transaction_id:transaction.id,method:transaction.method}, (err,results)=>{
+      console.log(err,results)
+    })
 		
 	} else {
 		// reject it
