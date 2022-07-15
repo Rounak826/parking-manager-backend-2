@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay, updateSlotType} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay, updateSlotType, parkingPayments} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 const multer = require('multer');
 const bodyParser = require('body-parser');
@@ -149,7 +149,9 @@ app.post('/verification', (req, res) => {
 	if (digest === req.headers['x-razorpay-signature']) {
 		console.log('request is legit')
 		// process it
-    updateTransaction({payment_id:transaction.id,method:transaction.method, order_id: transaction.order_id}, (err,results)=>{
+    const date = new Date()
+    const timeStamp = date.getTime()
+    updateTransaction({payment_id:transaction.id,method:transaction.method, order_id: transaction.order_id,timeStamp }, (err,results)=>{
       console.log(err,results)
     })
 		
@@ -159,7 +161,7 @@ app.post('/verification', (req, res) => {
 	}
 	res.json({ status: 'ok' })
 })
-
+app.get("/parkingPayments", checkToken, parkingPayments)
 const port = process.env.PORT || 4000;
 
 

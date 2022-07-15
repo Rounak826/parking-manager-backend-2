@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const shortid = require("shortid");
@@ -1210,7 +1210,9 @@ module.exports = {
           payment_capture,
         };
         const response = await razorpay.orders.create(options);
-        addTransaction({order_id:response.id,user_id,receipt_id: options.receipt,parking_id: results[0].parking_id,booking_id:results[0].booking_id, amount:response.amount,currency: response.currency  }, (err, results) => {
+        const date = new Date()
+        const timeStamp = date.getTime()
+        addTransaction({order_id:response.id,user_id,receipt_id: options.receipt,parking_id: results[0].parking_id,booking_id:results[0].booking_id, amount:response.amount,currency: response.currency, timeStamp  }, (err, results) => {
           if(err){
             console.log(err)
             return res.status(500).json({
@@ -1242,7 +1244,31 @@ module.exports = {
   },
 
   //transactions
+  parkingPayments: (req, res) => {
+    const parking_id = req.decoded.result.user_id
+    getAllParkingTransaction(parking_id, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (!results||results.length===0) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No Payements Found.'
+        });
+      }
+      return res.json({
+        success: true,
+        data: results,
+        message: 'Records Found.'
+      });
+    });
 
+  },
   
 };
 

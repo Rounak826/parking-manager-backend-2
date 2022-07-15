@@ -1,5 +1,4 @@
 const db = require("../config/database");
-const moment = require('moment')
 
 
 
@@ -702,8 +701,8 @@ module.exports = {
   addTransaction:(data, callBack) => {
     console.log(data)
     db.query(
-      `insert into transactions(order_id,receipt_id,user_id,parking_id,booking_id,amount,currency) 
-        values(?,?,?,?,?,?,?)`,
+      `insert into transactions(order_id,receipt_id,user_id,parking_id,booking_id,amount,currency,timestamp) 
+        values(?,?,?,?,?,?,?,?)`,
       [
         data.order_id,
         data.receipt_id,
@@ -712,6 +711,7 @@ module.exports = {
         data.booking_id,
         data.amount,
         data.currency,
+        data.timestamp,
       ],
       (error, results, fields) => {
         if (error) {
@@ -723,10 +723,11 @@ module.exports = {
   },
   updateTransaction:(data, callBack) => {
     db.query(
-      `update transactions set method=?,payment_id=? where order_id=?`,
+      `update transactions set method=?,payment_id=?, timestamp=? where order_id=?`,
       [
         data.method,
         data.payment_id,
+        data.timestamp,
         data.order_id
       ],
       (error, results, fields) => {
@@ -739,7 +740,7 @@ module.exports = {
   },
   getAllParkingTransaction:(parking_id, callBack) => {
     db.query(
-      `select transaction.*, user.name, user.mobile, user.email from transaction inner join user on transaction.user_id = user.user_id where parking_id = ?`,
+      `select transactions.*, user.name, user.mobile, user.email from transactions inner join user on transactions.user_id = user.user_id where parking_id = ? and payment_id<>null `,
       [
         parking_id
       ],
