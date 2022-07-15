@@ -149,7 +149,7 @@ app.post('/verification', (req, res) => {
 	if (digest === req.headers['x-razorpay-signature']) {
 		console.log('request is legit')
 		// process it
-    updateTransaction({transaction_id:transaction.id,method:transaction.method}, (err,results)=>{
+    updateTransaction({payment_id:transaction.id,method:transaction.method, order_id: transaction.order_id}, (err,results)=>{
       console.log(err,results)
     })
 		
