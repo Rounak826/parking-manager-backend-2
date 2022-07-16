@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay, updateSlotType, parkingPayments} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay, updateSlotType, parkingPayments, payAtCheckout, payAtBooking, getUserActiveRequest} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 const multer = require('multer');
 const bodyParser = require('body-parser');
@@ -127,11 +127,13 @@ app.post("/sendRequest",checkToken, sendRequest);
 app.get("/updateRequestStatus",checkToken,updateRequestStatus)
 app.get("/allotSlot",checkToken,allotSlot)
 app.get("/getRequestById",checkToken,getRequestById)
+app.get("/getUserActiveRequest",checkToken,getUserActiveRequest)
 app.get("/BookedSlotStatus", checkToken, BookedSlotStatus)
 
 //checkout
 app.get("/checkout", checkToken, checkout)
-app.get("/pay", checkToken, pay)
+app.get("/payAtCheckout", checkToken, payAtCheckout)
+app.get("/payAtBooking", checkToken, payAtBooking)
 app.post('/verification', (req, res) => {
 	// do a validation
 	const secret = 'STR@12345'

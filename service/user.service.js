@@ -530,8 +530,8 @@ module.exports = {
   //booking
   addBooking: (data,instant, callBack) => {
     db.query(
-      `insert into bookings(parking_id,slot_id,user_id,vehicle_id,booking_from,booking_till) 
-        values(?,?,?,?,?,?);update slots set status=? where slot_id=?`,
+      `insert into bookings(parking_id,slot_id,user_id,vehicle_id,booking_from,booking_till,type) 
+        values(?,?,?,?,?,?,?);update slots set status=? where slot_id=?`,
       [
         data.parking_id,
         data.slot_id,
@@ -539,6 +539,7 @@ module.exports = {
         data.vehicle_id,
         data.booking_from,
         data.booking_till,
+        instant,
         'booked',
         instant?data.slot_id:'-' 
       ],
@@ -608,7 +609,7 @@ module.exports = {
       `update slots set status=? where slot_id=?;update bookings SET checkout=?,charge=?,penalty=? 
         where booking_id=?`,
       [
-        'free',
+        data.status||'free',
         data.slot_id ,
         data.checkout,
         data.charge,
@@ -642,7 +643,6 @@ module.exports = {
     );
 
   },
-
   addBookingRequest: (data, callBack) => {
     db.query(
       `insert into book_request(user_id,vehicle_id,booking_from,booking_till,booking_id,type) 
@@ -695,6 +695,21 @@ module.exports = {
         return callBack(null, results);
       }
     );
+  },
+  getUserActiveRequest:(id, callBack) => {
+    db.query(
+      `select * from book_request where user_id=? and status>=100 and status<700 order by req_time desc`,
+      [
+        id
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+
   },
   //Transactions
 

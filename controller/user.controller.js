@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction, getUserActiveRequest } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const shortid = require("shortid");
@@ -313,32 +313,32 @@ module.exports = {
   //parking
   addParking: (req, res) => {
     const user_id = req.decoded.result.user_id
-      console.log(req.body,req.file)
-      if(req.file){
-        req.body.image_url = req.file.filename
-      }
-      else{
-        req.body.image_url = ''
-      }
-      
-      
-      addParking({ ...req.body, parking_id: user_id }, (err, results) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({
-            success: false,
-            message: err.message
-          });
-        }   
-        return res.status(200).json({
-          success: true,
-          data: results,
-          message: 'Parking added Successfully.'
-        });
+    console.log(req.body, req.file)
+    if (req.file) {
+      req.body.image_url = req.file.filename
+    }
+    else {
+      req.body.image_url = ''
+    }
 
-          
-         
-        })
+
+    addParking({ ...req.body, parking_id: user_id }, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        data: results,
+        message: 'Parking added Successfully.'
+      });
+
+
+
+    })
 
 
   },
@@ -368,7 +368,7 @@ module.exports = {
   },
   updateParkingDetails: (req, res) => {
     const parking_id = req.decoded.result.user_id
-    if(req.file){
+    if (req.file) {
       req.body.image_url = req.file.filename
     }
     updateParkingDetails({ ...req.body, parking_id }, (err, results) => {
@@ -561,7 +561,7 @@ module.exports = {
 
   //slots
   addSlot: (req, res) => {
-    const data =JSON.parse(req.body.slots)
+    const data = JSON.parse(req.body.slots)
     addSlots(data, (err, results) => {
       if (err) {
         console.log(err);
@@ -627,7 +627,7 @@ module.exports = {
         success: false,
         message: "No slots found"
       });
-      
+
 
       return res.status(200).json({
         success: true,
@@ -671,7 +671,7 @@ module.exports = {
           message: err.message,
         });
       }
-      if (!results||results.length===0) {
+      if (!results || results.length === 0) {
         return res.json({
           success: false,
           data: [],
@@ -686,9 +686,9 @@ module.exports = {
     });
 
   },
-  updateSlotStatus:(req, res) => {
+  updateSlotStatus: (req, res) => {
     let parking_id = req.decoded.result.user_id
-    updateSlotStatusById({slot_id:req.query.slot_id,status:req.query.status,parking_id}, (err, results) => {
+    updateSlotStatusById({ slot_id: req.query.slot_id, status: req.query.status, parking_id }, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -696,7 +696,7 @@ module.exports = {
           message: err.message,
         });
       }
-      if (results.affectedRows==0) {
+      if (results.affectedRows == 0) {
         return res.json({
           success: false,
           data: [],
@@ -711,9 +711,9 @@ module.exports = {
     });
 
   },
-  updateSlotType:(req, res) => {
+  updateSlotType: (req, res) => {
     let parking_id = req.decoded.result.user_id
-    updateSlotTypeById({slot_id:req.query.slot_id,status:req.query.type,parking_id}, (err, results) => {
+    updateSlotTypeById({ slot_id: req.query.slot_id, status: req.query.type, parking_id }, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -721,7 +721,7 @@ module.exports = {
           message: err.message,
         });
       }
-      if (results.affectedRows==0) {
+      if (results.affectedRows == 0) {
         return res.json({
           success: false,
           data: [],
@@ -808,7 +808,7 @@ module.exports = {
       //select 5th available slot from last
       const first_empty_slot = results[results.length - 5].slot_id
 
-      addBooking({ user_id, slot_id: first_empty_slot, ...body, booking_from: body.booking_from },false, (err, results) => {
+      addBooking({ user_id, slot_id: first_empty_slot, ...body, booking_from: body.booking_from }, false, (err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -820,13 +820,48 @@ module.exports = {
           success: false,
           message: "Failed To Book Slot",
         });
+        getParkingDetails(req.decoded.result.user_id, (err, parking) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: false,
+              message: err.message
+            });
+          }
+          if (!parking) {
+            return res.status(500).json({
+              success: false,
+              message: "Parking Details not found"
+            });
+          }
+          rate = parseInt(parking.rate)
+          penalty_rate = parseInt(parking.penalty_rate)
+          const duration = (body.booking_till - body.booking_from) / (1000 * 60 * 60)
+          const charge = rate * duration
+          console.log(duration,charge)
+          checkout({status:'booked', checkout: null, charge, penalty: 0, booking_id: results[0].insertId, slot_id: first_empty_slot }, async (err, results) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({
+                success: false,
+                message: err.message
+              });
+            }
+            if (results[0].affectedRows == 0) return res.status(400).json({
+              success: false,
+              message: "Failed To Checout",
+            });
 
-        return res.status(200).json({
-          success: true,
-          data: first_empty_slot,
-          booking_id: results[0].insertId,
-          message: 'Slot Booked Successfully'
-        });
+            return res.status(200).json({
+              success: true,
+              data: first_empty_slot,
+              booking_id: results[0].insertId,
+              message: "Bill generated"
+            })
+
+          });
+
+        })
 
       })
 
@@ -920,8 +955,8 @@ module.exports = {
 
   },
   BookedSlotStatus: (req, res) => {
-    let booking_id= req.query.booking_id
-    getBookingById( booking_id , (err, results) => {
+    let booking_id = req.query.booking_id
+    getBookingById(booking_id, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -929,14 +964,14 @@ module.exports = {
           message: err.message,
         });
       }
-      if (!results||results.length==0) {
+      if (!results || results.length == 0) {
         return res.json({
           success: false,
           data: [],
           message: 'No Bookings Found.'
         });
       }
-      getSlotById(results[0].slot_id,(err, slotResults) => {
+      getSlotById(results[0].slot_id, (err, slotResults) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -945,7 +980,7 @@ module.exports = {
           });
 
         }
-        if (!slotResults||slotResults.length==0) {
+        if (!slotResults || slotResults.length == 0) {
           return res.status(400).json({
             success: false,
             data: [],
@@ -953,14 +988,14 @@ module.exports = {
           });
         }
         console.log(slotResults)
-        if(slotResults[0].status=='free'){
+        if (slotResults[0].status == 'free') {
           return res.status(200).json({
             success: true,
             data: true,
             slot_id: results[0].slot_id,
             message: 'Records Found.'
           });
-        }else{
+        } else {
           return res.status(400).json({
             success: false,
             data: false,
@@ -968,23 +1003,23 @@ module.exports = {
           });
         }
       })
-     
+
     });
 
   },
 
-  
+
 
   //Booking request
 
   sendRequest: (req, res) => {
     const user_id = req.decoded.result.user_id
-    
-    if(req.body.type==0){ 
+
+    if (req.body.type == 0) {
       const date = new Date()
-      req.body.booking_id =' '
+      req.body.booking_id = ' '
       req.body.booking_from = date.getTime()
-      const booking_till= new Date(req.body.booking_till)
+      const booking_till = new Date(req.body.booking_till)
       req.body.booking_till = booking_till.getTime();
     }
     console.log(req.body)
@@ -1029,7 +1064,7 @@ module.exports = {
       });
     });
   },
-  allotSlot:(req, res) => {
+  allotSlot: (req, res) => {
     const request_id = req.query.request_id
     const booking_id = req.query.booking_id
     updateRequestBooking_id(booking_id, request_id, (err, results) => {
@@ -1072,7 +1107,7 @@ module.exports = {
           message: 'No Request Found'
         });
       }
-      console.log({req_id: req.query.request_id, user_id, role }, results[0])
+      console.log({ req_id: req.query.request_id, user_id, role }, results[0])
       if (role === 'parking') {
         return res.status(200).json({
           success: true,
@@ -1094,22 +1129,56 @@ module.exports = {
 
     });
   },
+  getUserActiveRequest: (req, res) => {
+
+    const user_id = req.decoded.result.user_id
+
+    getUserActiveRequest(user_id, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (results.length == 0) {
+        return res.status(404).json({
+          success: true,
+          data: results,
+          message: 'No Request Found'
+        });
+      }
+      if (user_id == results[0].user_id) {
+        return res.status(200).json({
+          success: true,
+          data: results[0],
+          message: 'Records Found.'
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Unauthorized Data'
+        });
+      }
+
+    });
+  },
 
   //checkout
-  checkout:(req, res) => {
-   
+  checkout: (req, res) => {
+
     const booking_id = req.query.booking_id
     const date = new Date()
     //current time with 10 min allowance
-    const current_time = date.getTime()+ 10*60*60*1000
+    const current_time = date.getTime() + 10 * 60 * 60 * 1000
     let rate = 0
     let charge = 0
     let penalty_rate = 0
     let penalty = 0
-    let duration =0
+    let duration = 0
     let extra = 0
     let slot_id = ''
-    getParkingDetails(req.decoded.result.user_id,(err,parking)=>{
+    getParkingDetails(req.decoded.result.user_id, (err, parking) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -1117,15 +1186,15 @@ module.exports = {
           message: err.message
         });
       }
-      if(!parking){
+      if (!parking) {
         return res.status(500).json({
           success: false,
           message: "Parking Details not found"
         });
       }
-      rate =parseInt(parking.rate) 
-      penalty_rate =parseInt(parking.penalty_rate)
-      getBookingById(booking_id,(err, booking) => {
+      rate = parseInt(parking.rate)
+      penalty_rate = parseInt(parking.penalty_rate)
+      getBookingById(booking_id, (err, booking) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -1133,22 +1202,22 @@ module.exports = {
             message: err.message
           });
         }
-        if(!booking){
+        if (!booking) {
           return res.status(500).json({
             success: false,
             message: "Parking Details not found"
           });
         }
         slot_id = booking[0].slot_id
-        duration =parseInt( booking[0].booking_till)- parseInt(booking[0].booking_from)
-        duration = duration/(1000*60*60)
-        charge = duration*rate
-        console.log(booking[0].checkout,current_time)
-        if(booking[0].checkout>current_time){ 
-            extra =(current_time - parseInt(booking[0].checkout))-duration
-            penalty = extra/(1000*60*60)*parseInt(penalty_rate)
+        duration = parseInt(booking[0].booking_till) - parseInt(booking[0].booking_from)
+        duration = duration / (1000 * 60 * 60)
+        charge = duration * rate
+        console.log(booking[0].checkout, current_time)
+        if (booking[0].checkout > current_time) {
+          extra = (current_time - parseInt(booking[0].checkout)) - duration
+          penalty = extra / (1000 * 60 * 60) * parseInt(penalty_rate)
         }
-        checkout({checkout:current_time,charge,penalty,booking_id,slot_id }, async (err, results) => {
+        checkout({ checkout: current_time, charge, penalty, booking_id, slot_id }, async (err, results) => {
           if (err) {
             console.log(err);
             return res.status(500).json({
@@ -1162,26 +1231,25 @@ module.exports = {
           });
 
           return res.status(200).json({
-            success:true,
+            success: true,
             data: results,
             message: "Bill generated"
           })
-          
+
         });
-  
+
       })
 
     })
 
 
   },
-  pay:(req, res) => {
-     //razorpay constants
-     const payment_capture = 1;
-     const currency = "INR";
-     const user_id = req.decoded.result.user_id
-
-    getBookingById(req.query.booking_id,async (err, results) => {
+  payAtCheckout: (req, res) => {
+    //razorpay constants
+    const payment_capture = 1;
+    const currency = "INR";
+    const user_id = req.decoded.result.user_id
+    getRequestById(req.query.request_id, (err,requests)=>{
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -1189,23 +1257,140 @@ module.exports = {
           message: err.message
         });
       }
-      if (!results||results.length==0) return res.status(400).json({
+      if(!requests||requests.length===0){
+        res.status(400).json({
+          success: false,
+          message: "No Request found",
+        });
+      }
+      getBookingById(requests[0].booking_id, async (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message
+          });
+        }
+        if (!results || results.length == 0) return res.status(400).json({
+          success: false,
+          message: "No booking info found",
+        });
+        if (!results[0].charge || !results[0].checkout) {
+          return res.status(400).json({
+            success: false,
+            message: "checkout not done!",
+          });
+        }
+        
+        let charge =  results[0].type==0?parseInt(results[0].charge):0
+        let penalty = parseInt(results[0].penalty) || 0
+        if(charge==0){
+          updateRequestStatus(700,req.query.request_id,(err,result)=>{
+            if (err) {
+              console.log(err)
+              return res.status(500).json({
+                success: false,
+                message: "failed to update request",
+                error: err
+              })
+  
+            }
+            if(result.affectedRows==0){
+              return res.status(500).json({
+                success: false,
+                message: "failed to update request",
+           
+              })
+            }
+            return res.status(200).json({
+              success: true,
+              message: "No Payment Required",
+              skip:true
+         
+            })
+
+          })
+        }else{
+          try {
+  
+            const options = {
+              amount: (charge + penalty) * 100,
+              currency,
+              receipt: shortid.generate(),
+              payment_capture,
+            };
+            console.log(charge)
+  
+            const response = await razorpay.orders.create(options);
+            const date = new Date()
+            const timestamp = date.getTime()
+            addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, results) => {
+              if (err) {
+                console.log(err)
+                return res.status(500).json({
+                  success: false,
+                  message: "failed to transaction request",
+                  error: err
+                })
+    
+              }
+              res.status(200).json({
+                success: true,
+                message: "transaction request created",
+                id: response.id,
+                currency: response.currency,
+                amount: response.amount,
+                penalty: penalty*100
+              });
+    
+            })
+    
+          } catch (error) {
+            console.log(error);
+            res.status(500).json({
+              success: false,
+              message: error.description
+            })
+          }
+          
+        }
+
+  
+      });
+
+    })
+
+  },
+  payAtBooking:(req, res) => {
+    //razorpay constants
+    const payment_capture = 1;
+    const currency = "INR";
+    const user_id = req.decoded.result.user_id
+
+    getBookingById(req.query.booking_id, async (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message
+        });
+      }
+      if (!results || results.length == 0) return res.status(400).json({
         success: false,
         message: "No booking info found",
       });
-      if(!results[0].charge||!results[0].checkout){
+      if (!results[0].charge) {
         return res.status(400).json({
           success: false,
-          message: "checkout not done!",
+          message: "Charges not Calculated!",
         });
       }
-      let charge = parseInt(results[0].charge)  
-      let penalty = parseInt (results[0].penalty)||0
-      
+      let charge = parseInt(results[0].charge)
+
       try {
-        console.log(charge,penalty)
+        console.log(charge)
         const options = {
-          amount: (charge+penalty) * 100,
+          amount: (charge) * 100,
           currency,
           receipt: shortid.generate(),
           payment_capture,
@@ -1213,26 +1398,26 @@ module.exports = {
         const response = await razorpay.orders.create(options);
         const date = new Date()
         const timestamp = date.getTime()
-        addTransaction({order_id:response.id,user_id,receipt_id: options.receipt,parking_id: results[0].parking_id,booking_id:results[0].booking_id, amount:response.amount,currency: response.currency, timestamp  }, (err, results) => {
-          if(err){
+        addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, results) => {
+          if (err) {
             console.log(err)
             return res.status(500).json({
               success: false,
-              message: "failed to generate bill",
+              message: "failed to transaction request",
               error: err
             })
 
           }
           res.status(200).json({
             success: true,
-            message:"bill generated",
+            message: "transaction request created",
             id: response.id,
             currency: response.currency,
             amount: response.amount,
           });
-          
+
         })
-        
+
       } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -1240,9 +1425,11 @@ module.exports = {
           message: error.description
         })
       }
-      
+
     });
   },
+
+
 
   //transactions
   parkingPayments: (req, res) => {
@@ -1255,7 +1442,7 @@ module.exports = {
           message: err.message,
         });
       }
-      if (!results||results.length===0) {
+      if (!results || results.length === 0) {
         return res.json({
           success: false,
           data: [],
@@ -1270,6 +1457,6 @@ module.exports = {
     });
 
   },
-  
+
 };
 
