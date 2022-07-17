@@ -698,7 +698,7 @@ module.exports = {
   },
   getUserActiveRequest:(id, callBack) => {
     db.query(
-      `select * from book_request where user_id=? and status>=100 and status<700 order by req_time desc`,
+      `select book_Request.*, slots.slot_id, slots.floor_id from book_request INNER JOIN bookings on book_request.booking_id= bookings.booking_id INNER JOIN slots ON bookings.slot_id = slots.slot_id  where book_request.user_id=? and book_request.status>=100 and book_request.status<700 order by req_time desc`,
       [
         id
       ],
@@ -753,11 +753,14 @@ module.exports = {
       }
     );
   },
-  getAllParkingTransaction:(parking_id, callBack) => {
+  getAllParkingTransaction:(parking_id,timestamp, callBack) => {
     db.query(
-      `select transactions.*, user.name, user.mobile, user.email from transactions inner join user on transactions.user_id = user.user_id where parking_id = ? and payment_id IS NOT NULL `,
+      `select  transactions.*, user.name, user.mobile, user.email from transactions inner join user on transactions.user_id = user.user_id where parking_id = ? and payment_id IS NOT NULL and timestamp<?;select sum(amount) as total from transactions where parking_id=? and timestamp<?`,
       [
-        parking_id
+        parking_id,
+        timestamp,
+        parking_id,
+        timestamp
       ],
       (error, results, fields) => {
         if (error) {

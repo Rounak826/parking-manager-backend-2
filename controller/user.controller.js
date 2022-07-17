@@ -1434,7 +1434,10 @@ module.exports = {
   //transactions
   parkingPayments: (req, res) => {
     const parking_id = req.decoded.result.user_id
-    getAllParkingTransaction(parking_id, (err, results) => {
+    const time = new Date(req.query.time||'')
+    const timestamp = time.getTime()
+    console.log(req.query.time)
+    getAllParkingTransaction(parking_id,timestamp, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -1442,7 +1445,8 @@ module.exports = {
           message: err.message,
         });
       }
-      if (!results || results.length === 0) {
+      console.log(results)
+      if (!results || results[0][0].length === 0) {
         return res.json({
           success: false,
           data: [],
@@ -1451,7 +1455,10 @@ module.exports = {
       }
       return res.json({
         success: true,
-        data: results,
+        data: {
+          history: results[0],
+          total: results[1]  
+        },
         message: 'Records Found.'
       });
     });
