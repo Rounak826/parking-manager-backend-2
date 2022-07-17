@@ -758,7 +758,7 @@ module.exports = {
       });
       const first_empty_slot = results[0].slot_id
       const booking_from = new Date().getTime()
-      addBooking({ parking_id, slot_id: first_empty_slot, ...body, booking_from },true, (err, results) => {
+      addBooking({ parking_id, slot_id: first_empty_slot, ...body, booking_from }, true, (err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -822,7 +822,7 @@ module.exports = {
           message: "Failed To Book Slot",
         });
 
-        
+
         getParkingDetails(req.decoded.result.user_id, (err, parking) => {
           if (err) {
             console.log(err);
@@ -841,8 +841,8 @@ module.exports = {
           penalty_rate = parseInt(parking.penalty_rate)
           const duration = (body.booking_till - body.booking_from) / (1000 * 60 * 60)
           const charge = rate * duration
-          console.log(duration,charge)
-          checkout({status:'booked', checkout: null, charge, penalty: 0, booking_id: bookingResults[0].insertId, slot_id: first_empty_slot }, async (err, results) => {
+          console.log(duration, charge)
+          checkout({ status: 'booked', checkout: null, charge, penalty: 0, booking_id: bookingResults[0].insertId, slot_id: first_empty_slot }, async (err, results) => {
             if (err) {
               console.log(err);
               return res.status(500).json({
@@ -951,7 +951,17 @@ module.exports = {
       }
       return res.json({
         success: true,
-        data: results,
+        data: results.map((booking,i)=>{
+          return {
+            ...booking,
+            time:  `${moment(booking.booking_from).format("hh:mm a")} - ${moment(booking.booking_till).format("hh:mm a")}`,
+            date: TimeDiff(booking.booking_till,booking.booking_from)
+          }
+        })
+          
+          
+
+        ,
         message: 'Records Found.'
       });
     });
@@ -1154,7 +1164,7 @@ module.exports = {
       if (user_id == results[0].user_id) {
         return res.status(200).json({
           success: true,
-          data: {...results[0], booking_from: moment(results[0].booking_from,"x").format("hh:mm a"),booking_till: moment(results[0].booking_till,"x").format("hh:mm a") },
+          data: { ...results[0], booking_from: moment(results[0].booking_from, "x").format("hh:mm a"), booking_till: moment(results[0].booking_till, "x").format("hh:mm a") },
           message: 'Records Found.'
         });
       } else {
@@ -1252,7 +1262,7 @@ module.exports = {
     const payment_capture = 1;
     const currency = "INR";
     const user_id = req.decoded.result.user_id
-    getRequestById(req.query.request_id, (err,requests)=>{
+    getRequestById(req.query.request_id, (err, requests) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -1260,7 +1270,7 @@ module.exports = {
           message: err.message
         });
       }
-      if(!requests||requests.length===0){
+      if (!requests || requests.length === 0) {
         res.status(400).json({
           success: false,
           message: "No Request found",
@@ -1284,11 +1294,11 @@ module.exports = {
             message: "checkout not done!",
           });
         }
-        
-        let charge =  results[0].type==0?parseInt(results[0].charge):0
+
+        let charge = results[0].type == 0 ? parseInt(results[0].charge) : 0
         let penalty = parseInt(results[0].penalty) || 0
-        if(charge==0){
-          updateRequestStatus(700,req.query.request_id,(err,result)=>{
+        if (charge == 0) {
+          updateRequestStatus(700, req.query.request_id, (err, result) => {
             if (err) {
               console.log(err)
               return res.status(500).json({
@@ -1296,26 +1306,26 @@ module.exports = {
                 message: "failed to update request",
                 error: err
               })
-  
+
             }
-            if(result.affectedRows==0){
+            if (result.affectedRows == 0) {
               return res.status(500).json({
                 success: false,
                 message: "failed to update request",
-           
+
               })
             }
             return res.status(200).json({
               success: true,
               message: "No Payment Required",
-              skip:true
-         
+              skip: true
+
             })
 
           })
-        }else{
+        } else {
           try {
-  
+
             const options = {
               amount: (charge + penalty) * 100,
               currency,
@@ -1323,7 +1333,7 @@ module.exports = {
               payment_capture,
             };
             console.log(charge)
-  
+
             const response = await razorpay.orders.create(options);
             const date = new Date()
             const timestamp = date.getTime()
@@ -1335,7 +1345,7 @@ module.exports = {
                   message: "failed to transaction request",
                   error: err
                 })
-    
+
               }
               res.status(200).json({
                 success: true,
@@ -1343,16 +1353,16 @@ module.exports = {
                 id: response.id,
                 currency: response.currency,
                 amount: response.amount,
-                penalty: penalty*100,
+                penalty: penalty * 100,
                 time: {
-                  date:  moment(results[0].booking_from,"x").format("DD MMM"),
-                  booking_from:  moment(results[0].booking_from,"x").format("hh:mm a"),
-                  booking_till:  moment(results[0].booking_till,"x").format("hh:mm a"),
+                  date: moment(results[0].booking_from, "x").format("DD MMM"),
+                  booking_from: moment(results[0].booking_from, "x").format("hh:mm a"),
+                  booking_till: moment(results[0].booking_till, "x").format("hh:mm a"),
                 }
               });
-    
+
             })
-    
+
           } catch (error) {
             console.log(error);
             res.status(500).json({
@@ -1360,16 +1370,16 @@ module.exports = {
               message: error.description
             })
           }
-          
+
         }
 
-  
+
       });
 
     })
 
   },
-  payAtBooking:(req, res) => {
+  payAtBooking: (req, res) => {
     //razorpay constants
     const payment_capture = 1;
     const currency = "INR";
@@ -1423,9 +1433,9 @@ module.exports = {
             currency: response.currency,
             amount: response.amount,
             time: {
-              date: moment(results[0].booking_from,"x").format("DD MMM"),
-              booking_from: moment(results[0].booking_from,"x").format("hh:mm a"),
-              booking_till: moment(results[0].booking_till,"x").format("hh:mm a")
+              date: moment(results[0].booking_from, "x").format("DD MMM"),
+              booking_from: moment(results[0].booking_from, "x").format("hh:mm a"),
+              booking_till: moment(results[0].booking_till, "x").format("hh:mm a")
             }
 
           });
@@ -1448,10 +1458,10 @@ module.exports = {
   //transactions
   parkingPayments: (req, res) => {
     const parking_id = req.decoded.result.user_id
-    const time = new Date(req.query.time||'')
+    const time = new Date(req.query.time || '')
     const timestamp = time.getTime()
     console.log(req.query.time)
-    getAllParkingTransaction(parking_id,timestamp, (err, results) => {
+    getAllParkingTransaction(parking_id, timestamp, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -1471,7 +1481,7 @@ module.exports = {
         success: true,
         data: {
           history: results[0],
-          total: results[1]  
+          total: results[1]
         },
         message: 'Records Found.'
       });
@@ -1481,3 +1491,29 @@ module.exports = {
 
 };
 
+function TimeDiff(booking_from) {
+  const date1 = moment(booking_from)
+  const date2 = moment()
+  let year = date1.diff(date2, 'year');
+  let month = date1.diff(date2, 'months');
+  let days = date1.diff(date2, 'days');
+
+  if (year < 1) {
+    if (month < 1) {
+      if (days > 1) {
+        return days + ' days'
+      }
+      else if (days == 1) {
+        return "Tommorow"
+      } else if (days = 0) {
+        return "Today"
+      }
+
+    } else {
+      return month + ' month'
+    }
+  } else {
+
+    return year + ' years'
+  }
+}

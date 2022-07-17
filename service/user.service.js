@@ -818,3 +818,4 @@ function checkAvaibilityTill(booking_from, book_till, buffer = 0) {
   console.log(xbf - bt >= (buffer * 60 * 60 * 1000));
   return (xbf - bt) >= (buffer * 60 * 60 * 1000);
 }
+
