@@ -823,7 +823,7 @@ module.exports = {
         });
 
 
-        getParkingDetails(req.decoded.result.user_id, (err, parking) => {
+        getParkingDetails(req.body.parking_id, (err, parking) => {
           if (err) {
             console.log(err);
             return res.status(500).json({
