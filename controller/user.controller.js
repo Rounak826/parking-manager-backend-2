@@ -1424,8 +1424,8 @@ module.exports = {
             amount: response.amount,
             time: {
               date: moment(results[0].booking_from,"x").format("DD MMM"),
-              booking_from: moment(results[0].booking_from,"x").format("DD MMM YYYY hh:mm a"),
-              booking_till: moment(results[0].booking_till,"x").format("DD MMM YYYY hh:mm a")
+              booking_from: moment(results[0].booking_from,"x").format("hh:mm a"),
+              booking_till: moment(results[0].booking_till,"x").format("hh:mm a")
             }
 
           });
