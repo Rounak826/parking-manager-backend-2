@@ -1030,7 +1030,7 @@ module.exports = {
 
     if (req.body.type == 0) {
       const date = new Date()
-      req.body.booking_id = ' '
+      req.body.booking_id = null
       req.body.booking_from = date.getTime()
       const booking_till = new Date(req.body.booking_till)
       req.body.booking_till = booking_till.getTime();

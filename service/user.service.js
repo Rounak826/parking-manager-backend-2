@@ -652,7 +652,7 @@ module.exports = {
         data.vehicle_id,
         data.booking_from,
         data.booking_till,
-        data.type==0?'':data.booking_id,
+        data.type==0?null:data.booking_id,
         data.type,
       ],
       (error, results, fields) => {
