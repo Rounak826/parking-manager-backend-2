@@ -1469,12 +1469,11 @@ module.exports = {
           message: err.message,
         });
       }
-      console.log(results)
-      if (!results || results[0][0].length === 0) {
+      if (!results) {
         return res.json({
           success: false,
           data: [],
-          message: 'No Payements Found.'
+          message: 'No Payement Record Found.'
         });
       }
       return res.json({
