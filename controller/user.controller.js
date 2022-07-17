@@ -3,6 +3,7 @@ const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const shortid = require("shortid");
 const Razorpay = require("razorpay");
+const moment = require("moment");
 
 const razorpay = new Razorpay({
   key_id: 'rzp_test_gEFzXsl80uOouW',
@@ -1342,7 +1343,12 @@ module.exports = {
                 id: response.id,
                 currency: response.currency,
                 amount: response.amount,
-                penalty: penalty*100
+                penalty: penalty*100,
+                time: {
+                  date:  moment(results[0].booking_from,"x").format("DD MMM"),
+                  booking_from:  moment(results[0].booking_from,"x").format("DD MMM YYYY hh:mm a"),
+                  booking_till:  moment(results[0].booking_till,"x").format("DD MMM YYYY hh:mm a"),
+                }
               });
     
             })
@@ -1400,7 +1406,7 @@ module.exports = {
         const response = await razorpay.orders.create(options);
         const date = new Date()
         const timestamp = date.getTime()
-        addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, results) => {
+        addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, transactionResult) => {
           if (err) {
             console.log(err)
             return res.status(500).json({
@@ -1416,6 +1422,12 @@ module.exports = {
             id: response.id,
             currency: response.currency,
             amount: response.amount,
+            time: {
+              date: moment(results[0].booking_from,"x").format("DD MMM"),
+              booking_from: moment(results[0].booking_from,"x").format("DD MMM YYYY hh:mm a"),
+              booking_till: moment(results[0].booking_till,"x").format("DD MMM YYYY hh:mm a")
+            }
+
           });
 
         })
@@ -1424,7 +1436,7 @@ module.exports = {
         console.log(error);
         res.status(500).json({
           success: false,
-          message: error.description
+          message: error.error.description
         })
       }
 
