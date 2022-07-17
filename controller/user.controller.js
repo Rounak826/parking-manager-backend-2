@@ -1154,7 +1154,7 @@ module.exports = {
       if (user_id == results[0].user_id) {
         return res.status(200).json({
           success: true,
-          data: results[0],
+          data: {...results[0], booking_from: moment(results[0].booking_from,"x").format("hh:mm a"),booking_till: moment(results[0].booking_till,"x").format("hh:mm a") },
           message: 'Records Found.'
         });
       } else {
@@ -1346,8 +1346,8 @@ module.exports = {
                 penalty: penalty*100,
                 time: {
                   date:  moment(results[0].booking_from,"x").format("DD MMM"),
-                  booking_from:  moment(results[0].booking_from,"x").format("DD MMM YYYY hh:mm a"),
-                  booking_till:  moment(results[0].booking_till,"x").format("DD MMM YYYY hh:mm a"),
+                  booking_from:  moment(results[0].booking_from,"x").format("hh:mm a"),
+                  booking_till:  moment(results[0].booking_till,"x").format("hh:mm a"),
                 }
               });
     
