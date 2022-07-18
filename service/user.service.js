@@ -630,7 +630,7 @@ module.exports = {
   //Booking Request
   getRequestById: (id, callBack) => {
     db.query(
-      `select * from book_request where request_id=?`,
+      `select book_request.*, codes.message from book_request INNER JOIN codes on book_request.status = codes.code where request_id=?`,
       [
         id
       ],
@@ -698,7 +698,7 @@ module.exports = {
   },
   getUserActiveRequest:(id, callBack) => {
     db.query(
-      `select book_request.*, parking.name, floors.floor_no, slots.slot_id from book_request INNER JOIN bookings on book_request.booking_id= bookings.booking_id INNER JOIN slots ON bookings.slot_id = slots.slot_id INNER JOIN parking on bookings.parking_id= parking.parking_id INNER JOIN floors ON slots.floor_id = floors.floor_id  where book_request.user_id=? and book_request.status>=100 and book_request.status<700 order by req_time desc`,
+      `select book_request.*, parking.name, floors.floor_no, slots.slot_id, codes.message from book_request INNER JOIN bookings on book_request.booking_id= bookings.booking_id INNER JOIN slots ON bookings.slot_id = slots.slot_id INNER JOIN parking on bookings.parking_id= parking.parking_id INNER JOIN floors ON slots.floor_id = floors.floor_id INNER JOIN codes on book_request.status= codes.code  where book_request.user_id=? and book_request.status>=100 and book_request.status<700 order by req_time desc`,
       [
         id
       ],
