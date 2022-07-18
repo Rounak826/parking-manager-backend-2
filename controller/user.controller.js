@@ -1134,7 +1134,8 @@ module.exports = {
           success: true,
           data: {
             status: results[0].status,
-            message:  results[0].message
+            message:  results[0].message,
+            booking_id: results[0].booking_id
           },
           message: "records found"
         });
