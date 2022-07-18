@@ -1460,8 +1460,7 @@ module.exports = {
   //transactions
   parkingPayments: (req, res) => {
     const parking_id = req.decoded.result.user_id
-    const time = new Date(req.query.time || '')
-    const timestamp = time.getTime()
+    const timestamp =parseInt(time)
     console.log(req.query.time)
     getAllParkingTransaction(parking_id, timestamp, (err, results) => {
       if (err) {
@@ -1481,7 +1480,13 @@ module.exports = {
       return res.json({
         success: true,
         data: {
-          history: results[0],
+          history: results[0].map(x=>{
+            return {
+              ...x,
+              date : TimeDiff(x.timestamp),
+              time: moment(x.timestamp, "x").format("hh:mm a")
+            }
+          }),
           total: results[1]
         },
         message: 'Records Found.'
@@ -1493,12 +1498,13 @@ module.exports = {
 };
 
 function TimeDiff(booking_from) {
-  const date1 = moment(booking_from)
+  console.log(booking_from)
+  const date1 = moment(booking_from,"x")
   const date2 = moment()
   let year = date1.diff(date2, 'year');
   let month = date1.diff(date2, 'months');
   let days = date1.diff(date2, 'days');
-
+  console.log({days,month ,year})
   if (year < 1) {
     if (month < 1) {
       if (days > 1) {
