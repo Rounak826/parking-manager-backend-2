@@ -1487,8 +1487,7 @@ module.exports = {
               time: moment(x.timestamp, "x").format("hh:mm a")
             }
           }),
-          total: results[1],
-          results: results
+          total: results[1][0].total || '--'
         },
         message: 'Records Found.'
       });
