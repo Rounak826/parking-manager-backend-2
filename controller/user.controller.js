@@ -1132,8 +1132,11 @@ module.exports = {
       } else if (role === 'user' && user_id == results[0].user_id) {
         return res.status(200).json({
           success: true,
-          data: results[0].status,
-          message: 'Records Found.'
+          data: {
+            status: results[0].status,
+            message:  results[0].message
+          },
+          message: "records found"
         });
       } else {
         return res.status(400).json({
