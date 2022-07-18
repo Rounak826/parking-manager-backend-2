@@ -1460,8 +1460,7 @@ module.exports = {
   //transactions
   parkingPayments: (req, res) => {
     const parking_id = req.decoded.result.user_id
-    const timestamp =parseInt(time)
-    console.log(req.query.time)
+    const timestamp =parseInt(req.query.time)
     getAllParkingTransaction(parking_id, timestamp, (err, results) => {
       if (err) {
         console.log(err);
@@ -1477,6 +1476,7 @@ module.exports = {
           message: 'No Payement Record Found.'
         });
       }
+      
       return res.json({
         success: true,
         data: {
@@ -1487,7 +1487,8 @@ module.exports = {
               time: moment(x.timestamp, "x").format("hh:mm a")
             }
           }),
-          total: results[1]
+          total: results[1],
+          results: results
         },
         message: 'Records Found.'
       });
