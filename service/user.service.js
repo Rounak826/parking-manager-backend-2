@@ -539,7 +539,7 @@ module.exports = {
         data.vehicle_id,
         data.booking_from,
         data.booking_till,
-        instant,
+        !instant,
         'booked',
         instant?data.slot_id:'-' 
       ],

@@ -1122,7 +1122,6 @@ module.exports = {
           message: 'No Request Found'
         });
       }
-      console.log({ req_id: req.query.request_id, user_id, role }, results[0])
       if (role === 'parking') {
         return res.status(200).json({
           success: true,
