@@ -1303,7 +1303,7 @@ module.exports = {
         let charge = results[0].type == 0 ? parseInt(results[0].charge) : 0
         let penalty = parseInt(results[0].penalty) || 0
         if (charge == 0) {
-          updateRequestStatus(700, req.query.request_id, (err, result) => {
+          updateRequestStatus(603, req.query.request_id, (err, result) => {
             if (err) {
               console.log(err)
               return res.status(500).json({
@@ -1342,6 +1342,7 @@ module.exports = {
             const response = await razorpay.orders.create(options);
             const date = new Date()
             const timestamp = date.getTime()
+
             addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, TransactionResults) => {
               if (err) {
                 console.log(err)
@@ -1352,19 +1353,29 @@ module.exports = {
                 })
 
               }
-              res.status(200).json({
-                success: true,
-                message: "transaction request created",
-                id: response.id,
-                currency: response.currency,
-                amount: response.amount,
-                penalty: penalty * 100,
-                time: {
-                  date: moment(results[0].booking_from, "x").format("DD MMM"),
-                  booking_from: moment(results[0].booking_from, "x").format("hh:mm a"),
-                  booking_till: moment(results[0].booking_till, "x").format("hh:mm a"),
+              updateRequestStatus(600, req.query.request_id, (err, result) => {
+                if(err){
+                  return res.status(500).json({
+                    success: false,
+                    message: "Failed to update request status"
+
+                  })
                 }
-              });
+                res.status(200).json({
+                  success: true,
+                  message: "transaction request created",
+                  id: response.id,
+                  currency: response.currency,
+                  amount: response.amount,
+                  penalty: penalty * 100,
+                  time: {
+                    date: moment(results[0].booking_from, "x").format("DD MMM"),
+                    booking_from: moment(results[0].booking_from, "x").format("hh:mm a"),
+                    booking_till: moment(results[0].booking_till, "x").format("hh:mm a"),
+                  }
+                });
+              })
+
 
             })
 
