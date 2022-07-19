@@ -1342,7 +1342,7 @@ module.exports = {
             const response = await razorpay.orders.create(options);
             const date = new Date()
             const timestamp = date.getTime()
-            addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, results) => {
+            addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, TransactionResults) => {
               if (err) {
                 console.log(err)
                 return res.status(500).json({
