@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction, getUserActiveRequest } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction, getUserActiveRequest, getFloorMapById } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const shortid = require("shortid");
@@ -490,6 +490,44 @@ module.exports = {
         message: 'Records Found.'
       });
     });
+
+  },
+  getFloorMap: (req, res) => {
+    getFloorMapById(req.query.floor_no,req.query.parking_id, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (!results) {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No Records Found.'
+        });
+      }
+      getSlotsByFloor(results[0].floor_id,(err,slot)=>{
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        return res.json({
+          success: true,
+          data: {
+            floor: results[0],
+            slot
+          },
+          message: 'Records Found.'
+        });
+      });
+      })
+
+     
 
   },
   updateFloorById: (req, res) => {

@@ -329,6 +329,19 @@ module.exports = {
       }
     );
   },
+  getFloorMapById: (floor_no, parking_id, callBack) => {
+    db.query(
+      `select * from floors where floor_no=? and parking_id=?`,
+      [floor_no, parking_id],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+
+  },
 
   //slots
   addSlots: (data, callBack) => {

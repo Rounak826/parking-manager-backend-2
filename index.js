@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay, updateSlotType, parkingPayments, payAtCheckout, payAtBooking, getUserActiveRequest} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay, updateSlotType, parkingPayments, payAtCheckout, payAtBooking, getUserActiveRequest, getFloorMap} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 const multer = require('multer');
 const bodyParser = require('body-parser');
@@ -106,6 +106,7 @@ app.get("/getAllParkings",checkToken, getAllParking);
 //floor
 app.post("/addFloor",checkToken, addFloor);
 app.get("/getAllFloor", getAllFloor);
+app.get("/getFloorMap", getFloorMap);
 app.post("/updateFloorById",checkToken, updateFloorById);
 app.get("/deleteFloorById",checkToken, deleteFloorById);
 
