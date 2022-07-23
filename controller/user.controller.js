@@ -501,7 +501,7 @@ module.exports = {
           message: err.message,
         });
       }
-      if (!results) {
+      if (!results[0]) {
         return res.json({
           success: false,
           data: [],
