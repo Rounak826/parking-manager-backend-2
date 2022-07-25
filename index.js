@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, updateRequestStatus, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout, pay, updateSlotType, parkingPayments, payAtCheckout, payAtBooking, getUserActiveRequest, getFloorMap} = require("./controller/user.controller");
+const {createUser,login,getUsers,updateUsers,getUserInfo, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloor, updateFloorById, deleteFloorById, addSlot, getAvailableSlots, deleteSlot, InstantBooking, bookForLater, getSlotsByFloor, getVehicle, sendRequest, getRequestById, getUserBookings, getAllParking, allotSlot, getSlotById, BookedSlotStatus, updateSlotStatus, updateBooking, checkout,updateSlotType, parkingPayments, payAtCheckout, payAtBooking, getUserActiveRequest, getFloorMap, test, updateStatus} = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 const multer = require('multer');
 const bodyParser = require('body-parser');
@@ -12,7 +12,7 @@ const db = require("./config/database");
 const { checkToken } = require("./auth/token_validation");
 //file upload
 const fs = require('fs');
-const { updateTransaction } = require("./service/user.service");
+const { updateTransaction, getRequestIdbyOrderId, updateRequestStatus } = require("./service/user.service");
 const storage = multer.diskStorage({
   destination: (req,file,cb)=>{
       cb(null,'storage')
@@ -43,44 +43,7 @@ app.get("/createDatabase",async (req,res)=>{
   })
 })
 
-app.get("/deleteClinicImage",checkToken,(req,res)=>{
-  if (req.decoded.result.role === 'admin'||req.decoded.result.role === 'doctor') {
-  fs.unlink('./storage/'+req.query.filename, (err) => {
-    if (err) {
-      console.error(err)
-      return res.status(400).json({
-        success: false,
-        message:"Image deleted successfully",
-        error:err
-      })
-    }
-    db.query(
-      `delete from clinic_gallery  where  url like ? `,
-      [
-        '%' + req.query.filename + '%'
-      ],
-      (error, results, fields) => {
-        if (error) {
-          return res.status(500).json({
-            success: false,
-            data: error
-          });
-        }
-        return res.status(200).json({
-          success: true,
-          data: results
-        });
-      }
-    );
-  })
-}else {
-  return res.json({
-    success: false,
-    data: [],
-    message: "you are not authorized to access this info"
-  })
-}
-})
+
 
 //authentication
 app.post("/signup", createUser);
@@ -125,7 +88,7 @@ app.get("/userBookings",checkToken, getUserBookings);
 app.get("/updateBooking",checkToken, updateBooking);
 //Booking Request
 app.post("/sendRequest",checkToken, sendRequest);
-app.get("/updateRequestStatus",checkToken,updateRequestStatus)
+app.get("/updateRequestStatus",checkToken,updateStatus)
 app.get("/allotSlot",checkToken,allotSlot)
 app.get("/getRequestById",checkToken,getRequestById)
 app.get("/getUserActiveRequest",checkToken,getUserActiveRequest)
@@ -156,7 +119,17 @@ app.post('/verification', (req, res) => {
     const timestamp = date.getTime()
     updateTransaction({payment_id:transaction.id,method:transaction.method, order_id: transaction.order_id,timestamp }, (err,results)=>{
       console.log(err,results)
+      if(!err){
+        getRequestIdbyOrderId(transaction.order_id, (err,request)=>{
+            console.log(err)
+            updateRequestStatus(601,request.request_id, (err,results)=>{
+              console.log(err,results)
+            })
+
+        })
+      }
     })
+
 		
 	} else {
 		// reject it
@@ -165,6 +138,8 @@ app.post('/verification', (req, res) => {
 	res.json({ status: 'ok' })
 })
 app.get("/parkingPayments", checkToken, parkingPayments)
+//testing
+app.get("/test", checkToken, test)
 const port = process.env.PORT || 4000;
 
 

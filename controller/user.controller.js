@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction, getUserActiveRequest, getFloorMapById } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction, getUserActiveRequest, getFloorMapById, getRequestIdbyOrderId } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const shortid = require("shortid");
@@ -1101,7 +1101,7 @@ module.exports = {
       });
     });
   },
-  updateRequestStatus: (req, res) => {
+  updateStatus: (req, res) => {
     const request_id = req.query.request_id
     const status = req.query.status
     updateRequestStatus(status, request_id, (err, results) => {
@@ -1552,6 +1552,18 @@ module.exports = {
     });
 
   },
+
+  //testing
+  test: (req,res)=>{
+    getRequestIdbyOrderId(req.query.order_id, (err,result)=>{
+
+      if(err){
+        return res.json({
+          err: err.message
+        })
+      }
+    })
+  }
 
 };
 

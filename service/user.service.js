@@ -724,6 +724,21 @@ module.exports = {
     );
 
   },
+  getRequestIdbyOrderId:(order_id, callBack) => {
+    db.query(
+      `select book_request.* from transactions INNER JOIN book_request ON transactions.booking_id = book_request.booking_id where transactions.order_id = ?`,
+      [
+        order_id
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+
+  },
   //Transactions
 
   addTransaction:(data, callBack) => {
