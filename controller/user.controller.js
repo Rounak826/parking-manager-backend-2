@@ -493,6 +493,12 @@ module.exports = {
 
   },
   getFloorMap: (req, res) => {
+    if(!req.query.floor_no||!req.query.parking_id){
+      return res.status(500).json({
+        success:false,
+        message:"Wrong formatted data"
+      })
+    }
     getFloorMapById(req.query.floor_no,req.query.parking_id, (err, results) => {
       if (err) {
         console.log(err);
