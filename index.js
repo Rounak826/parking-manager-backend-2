@@ -117,13 +117,13 @@ app.post('/verification', (req, res) => {
 		// process it
     const date = new Date()
     const timestamp = date.getTime()
-    updateTransaction({payment_id:transaction.id,method:transaction.method, order_id: transaction.order_id,timestamp }, (err,results)=>{
-      console.log(err,results)
+    updateTransaction({payment_id:transaction.id,method:transaction.method, order_id: transaction.order_id,timestamp }, (err,updateTransaction)=>{
+      console.log({err,updateTransaction})
       if(!err){
         getRequestIdbyOrderId(transaction.order_id, (err,request)=>{
-            console.log(err)
-            updateRequestStatus(601,request.request_id, (err,results)=>{
-              console.log(err,results)
+            console.log({err,request})
+            updateRequestStatus(601,request[0].request_id, (err,results)=>{
+              console.log({err,results})
             })
 
         })

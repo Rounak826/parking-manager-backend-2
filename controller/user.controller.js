@@ -1562,6 +1562,7 @@ module.exports = {
           err: err.message
         })
       }
+      return res.json(result)
     })
   }
 
