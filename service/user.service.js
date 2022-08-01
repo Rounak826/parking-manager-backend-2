@@ -413,9 +413,9 @@ module.exports = {
   },
   getAllEmptySlotsForLater: (parking_id, booking_till, booking_from, callBack) => {
     db.query(
-      `select * from slots where type= 1 and slot_id not in (select slot_id from bookings where parking_id<>? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) ) order by floor_id , y , x `,
+      `select * from slots where type= 1 and parking_id=? and slot_id not in (select slot_id from bookings where parking_id<>? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) ) order by floor_id , y , x `,
       [
-
+        parking_id,
         parking_id,
         booking_from,
         booking_till,
@@ -434,9 +434,9 @@ module.exports = {
   },
   getAllEmptySlotsForInstant: (parking_id, booking_till, booking_from, callBack) => {
     db.query(
-      `select * from slots where type=1 and slot_id not in (select slot_id from bookings where parking_id<>? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) or status<>'free' )  order by floor_id , y , x `,
+      `select * from slots where type=1 and parking_id=? and slot_id not in (select slot_id from bookings where parking_id<>? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) or status<>'free' )  order by floor_id , y , x `,
       [
-
+        parking_id,
         parking_id,
         booking_from,
         booking_till,

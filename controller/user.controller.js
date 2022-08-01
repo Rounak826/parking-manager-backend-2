@@ -1213,7 +1213,7 @@ module.exports = {
       if (user_id == results[0].user_id) {
         return res.status(200).json({
           success: true,
-          data: { ...results[0], booking_from: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("hh:mm a"), booking_till: moment(results[0].booking_till, "x").tz('Asia/Kolkata').format("hh:mm a") },
+          data: { ...results[0], booking_from: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("hh:mm a"), booking_till: moment(results[0].booking_till, "x").format("hh:mm a") },
           message: 'Records Found.'
         });
       } else {
@@ -1415,7 +1415,7 @@ module.exports = {
                   time: {
                     date: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("DD MMM"),
                     booking_from: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("hh:mm a"),
-                    booking_till: moment(results[0].booking_till, "x").tz('Asia/Kolkata').format("hh:mm a"),
+                    booking_till: moment(results[0].booking_till, "x").format("hh:mm a"),
                   }
                 });
               })
