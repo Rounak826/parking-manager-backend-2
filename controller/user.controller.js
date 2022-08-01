@@ -1382,22 +1382,51 @@ module.exports = {
               payment_capture,
             };
             console.log(charge)
+            if(options.amount>=1){
+              const response = await razorpay.orders.create(options);
+              const date = new Date()
+              const timestamp = date.getTime()
+            
+            
 
-            const response = await razorpay.orders.create(options);
-            const date = new Date()
-            const timestamp = date.getTime()
+              addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, TransactionResults) => {
+                if (err) {
+                  console.log(err)
+                  return res.status(500).json({
+                    success: false,
+                    message: "failed to transaction request",
+                    error: err
+                  })
 
-            addTransaction({ order_id: response.id, user_id, receipt_id: options.receipt, parking_id: results[0].parking_id, booking_id: results[0].booking_id, amount: response.amount, currency: response.currency, timestamp }, (err, TransactionResults) => {
-              if (err) {
-                console.log(err)
-                return res.status(500).json({
-                  success: false,
-                  message: "failed to transaction request",
-                  error: err
+                }
+
+                updateRequestStatus(600, req.query.request_id, (err, result) => {
+                  if(err){
+                    return res.status(500).json({
+                      success: false,
+                      message: "Failed to update request status"
+
+                    })
+                  }
+                  res.status(200).json({
+                    success: true,
+                    message: "transaction request created",
+                    id: response.id,
+                    currency: response.currency,
+                    amount: response.amount,
+                    penalty: penalty * 100,
+                    time: {
+                      date: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("DD MMM"),
+                      booking_from: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("hh:mm a"),
+                      booking_till: moment(results[0].booking_till, "x").format("hh:mm a"),
+                    }
+                  });
                 })
 
-              }
-              updateRequestStatus(600, req.query.request_id, (err, result) => {
+
+              })
+            }else{
+              updateRequestStatus(603, req.query.request_id, (err, result) => {
                 if(err){
                   return res.status(500).json({
                     success: false,
@@ -1420,14 +1449,13 @@ module.exports = {
                 });
               })
 
-
-            })
+            }
 
           } catch (error) {
             console.log(error);
             res.status(500).json({
               success: false,
-              message: error.description
+              message: error.error.description
             })
           }
 
