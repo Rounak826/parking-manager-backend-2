@@ -1071,8 +1071,9 @@ module.exports = {
 
   sendRequest: (req, res) => {
     const user_id = req.decoded.result.user_id
-    console.log(req.body)
-    addBookingRequest({ ...req.body, user_id }, (err, results) => {
+    const booking_from = new Date(body.booking_from).getTime()
+    const booking_till = new Date(body.booking_till).getTime()
+    addBookingRequest({ ...req.body,booking_from,booking_till, user_id }, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
