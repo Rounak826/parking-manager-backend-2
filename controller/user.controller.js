@@ -785,11 +785,9 @@ module.exports = {
   InstantBooking: (req, res) => {
     const parking_id = req.decoded.result.user_id
     const body = req.body
-    console.log(body)
+ 
     body.booking_till = new Date(parseInt(body.booking_till)).getTime();
-    const date = new Date()
-    body.booking_from = date.getTime()
-    console.log(body)
+    body.booking_from = new Date(parseInt(body.booking_from)).getTime();
     getAllEmptySlotsForInstant(parking_id, body.booking_till, body.booking_from, (err, results) => {
       if (err) {
         console.log(err);
@@ -1000,7 +998,7 @@ module.exports = {
         data: results.map((booking,i)=>{
           return {
             ...booking,
-            time:  `${moment(booking.booking_from).tz('Asia/Kolkata').format("hh:mm a")} - ${moment(booking.booking_till).tz('Asia/Kolkata').format("hh:mm a")}`,
+            time:  `${moment(booking.booking_from).format("hh:mm a")} - ${moment(booking.booking_till).format("hh:mm a")}`,
             date: TimeDiff(booking.booking_till,booking.booking_from)
           }
         })
@@ -1213,7 +1211,7 @@ module.exports = {
       if (user_id == results[0].user_id) {
         return res.status(200).json({
           success: true,
-          data: { ...results[0], booking_from: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("hh:mm a"), booking_till: moment(results[0].booking_till, "x").format("hh:mm a") },
+          data: { ...results[0], booking_from: moment(results[0].booking_from, "x").format("hh:mm a"), booking_till: moment(results[0].booking_till, "x").format("hh:mm a") },
           message: 'Records Found.'
         });
       } else {
@@ -1416,8 +1414,8 @@ module.exports = {
                     amount: response.amount,
                     penalty: penalty * 100,
                     time: {
-                      date: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("DD MMM"),
-                      booking_from: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("hh:mm a"),
+                      date: moment(results[0].booking_from, "x").format("DD MMM"),
+                      booking_from: moment(results[0].booking_from, "x").format("hh:mm a"),
                       booking_till: moment(results[0].booking_till, "x").format("hh:mm a"),
                     }
                   });
@@ -1442,8 +1440,8 @@ module.exports = {
                   amount: response.amount,
                   penalty: penalty * 100,
                   time: {
-                    date: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("DD MMM"),
-                    booking_from: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("hh:mm a"),
+                    date: moment(results[0].booking_from, "x").format("DD MMM"),
+                    booking_from: moment(results[0].booking_from, "x").format("hh:mm a"),
                     booking_till: moment(results[0].booking_till, "x").format("hh:mm a"),
                   }
                 });
@@ -1521,9 +1519,9 @@ module.exports = {
             currency: response.currency,
             amount: response.amount,
             time: {
-              date: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("DD MMM"),
-              booking_from: moment(results[0].booking_from, "x").tz('Asia/Kolkata').format("hh:mm a"),
-              booking_till: moment(results[0].booking_till, "x").tz('Asia/Kolkata').format("hh:mm a")
+              date: moment(results[0].booking_from, "x").format("DD MMM"),
+              booking_from: moment(results[0].booking_from, "x").format("hh:mm a"),
+              booking_till: moment(results[0].booking_till, "x").format("hh:mm a")
             }
 
           });
@@ -1570,7 +1568,7 @@ module.exports = {
             return {
               ...x,
               date : TimeDiff(x.timestamp),
-              time: moment(x.timestamp, "x").tz('Asia/Kolkata').format("hh:mm a")
+              time: moment(x.timestamp, "x").format("hh:mm a")
             }
           }),
           total: results[1][0].total || '--'
