@@ -798,8 +798,7 @@ module.exports = {
         message: "No slots found"
       });
       const first_empty_slot = results[0].slot_id
-      const booking_from = new Date().getTime()
-      addBooking({ parking_id, slot_id: first_empty_slot, ...body, booking_from }, true, (err, results) => {
+      addBooking({ parking_id, slot_id: first_empty_slot, ...body }, true, (err, results) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
