@@ -785,9 +785,6 @@ module.exports = {
   InstantBooking: (req, res) => {
     const parking_id = req.decoded.result.user_id
     const body = req.body
- 
-    body.booking_till = new Date(parseInt(body.booking_till)).getTime();
-    body.booking_from = new Date(parseInt(body.booking_from)).getTime();
     getAllEmptySlotsForInstant(parking_id, body.booking_till, body.booking_from, (err, results) => {
       if (err) {
         console.log(err);
