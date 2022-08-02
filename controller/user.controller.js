@@ -1071,14 +1071,6 @@ module.exports = {
 
   sendRequest: (req, res) => {
     const user_id = req.decoded.result.user_id
-
-    if (req.body.type == 0) {
-      const date = new Date()
-      req.body.booking_id = null
-      req.body.booking_from = date.getTime()
-      const booking_till = new Date(req.body.booking_till)
-      req.body.booking_till = booking_till.getTime();
-    }
     console.log(req.body)
     addBookingRequest({ ...req.body, user_id }, (err, results) => {
       if (err) {
