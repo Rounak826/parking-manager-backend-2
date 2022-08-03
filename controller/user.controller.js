@@ -851,7 +851,7 @@ module.exports = {
       //select 5th available slot from last
       const first_empty_slot = results[results.length - 5].slot_id
 
-      addBooking({ user_id, slot_id: first_empty_slot, ...body, booking_from: body.booking_from }, false, (err, bookingResults) => {
+      addBooking({ user_id,instant:false, slot_id: first_empty_slot, ...body, booking_from: body.booking_from }, false, (err, bookingResults) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -884,7 +884,7 @@ module.exports = {
           const duration = (body.booking_till - body.booking_from) / (1000 * 60 * 60)
           const charge = rate * duration
           console.log(duration, charge)
-          checkout({ status: 'booked', checkout: null, charge, penalty: 0, booking_id: bookingResults[0].insertId, slot_id: first_empty_slot }, async (err, results) => {
+          checkout({ checkout: null, charge, penalty: 0, booking_id: bookingResults[0].insertId }, async (err, results) => {
             if (err) {
               console.log(err);
               return res.status(500).json({
@@ -892,7 +892,7 @@ module.exports = {
                 message: err.message
               });
             }
-            if (results[0].affectedRows == 0) return res.status(400).json({
+            if (results[1].affectedRows == 0) return res.status(400).json({
               success: false,
               message: "Failed To Checout",
             });
