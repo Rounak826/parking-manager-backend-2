@@ -1069,8 +1069,13 @@ module.exports = {
 
   sendRequest: (req, res) => {
     const user_id = req.decoded.result.user_id
-    const booking_from = new Date(req.body.booking_from).getTime()
-    const booking_till = new Date(req.body.booking_till).getTime()
+    let booking_from = req.body.booking_from
+    let booking_till = req.body.booking_till
+    if(req.body.type===0){
+      booking_from = new Date(req.body.booking_from).getTime()
+      booking_till = new Date(req.body.booking_till).getTime()
+    }
+    
     addBookingRequest({ ...req.body,booking_from,booking_till, user_id }, (err, results) => {
       if (err) {
         console.log(err);
