@@ -827,10 +827,11 @@ module.exports = {
   },
   bookForLater: (req, res) => {
     const user_id = req.decoded.result.user_id
-    const parking_id = req.parking_id
     const body = req.body
+    const parking_id = body.parking_id
     body.booking_till = new Date(body.booking_till).getTime();
     body.booking_from = new Date(body.booking_from).getTime();
+    console.log(body)
     getAllEmptySlotsForLater(parking_id, body.booking_till, body.booking_from, (err, results) => {
       if (err) {
         console.log(err);
@@ -841,6 +842,7 @@ module.exports = {
       }
 
       //reserve 5 slots
+      console.log(results)
 
       if (results.length < 5) return res.status(400).json({
         success: false,
