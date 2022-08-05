@@ -1,4 +1,4 @@
-const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction, getUserActiveRequest, getFloorMapById, getRequestIdbyOrderId } = require("../service/user.service");
+const { create, getUserByEmail, getUserById, getUsers, getUserByemail, addVehicle, updateVehicle, getUserVehicles, deleteVehicleById, addParking, updateParkingDetails, deleteParkingById, getParkingDetails, addFloor, getAllFloors, updateFloorById, getFloorById, addSlots, deleteSlotsById, deleteFloorById, getBookingById, addBooking, getAllEmptySlotsForLater, getSlotsByFloor, getVehicleById, updateRequestStatus, getRequestById, addBookingRequest, updateBooking, getBookingByTime, getAllEmptySlotsForInstant, getAllParking, updateRequestBooking_id, getSlotById, updateSlotStatusById, checkout, updateSlotTypeById, addTransaction, getAllParkingTransaction, getUserActiveRequest, getFloorMapById, getRequestIdbyOrderId, deleteBookingById } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const shortid = require("shortid");
@@ -1062,7 +1062,36 @@ module.exports = {
     });
 
   },
-
+  deleteBooking:(req,res)=>{
+    if(req.decoded.result.role==='parking'){
+      deleteBookingById(req.query.booking_id,req.query.slot_id, (err,results)=>{
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        if (!results || results[0].affectedRows == 0) {
+          return res.status(400).json({
+            success: false,
+            data: [],
+            message: 'No Bookings Found.'
+          });
+        }
+        return res.status(200).json({
+          success: false,
+          data: results,
+          message: 'booking deleted'
+        }); 
+      })
+    }else{
+      return res.status(400).json({
+        success: false,
+        message: "Unauthorized Request"
+      })
+    }
+  },
 
 
   //Booking request

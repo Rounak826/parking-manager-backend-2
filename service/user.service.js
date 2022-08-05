@@ -638,6 +638,22 @@ module.exports = {
       }
     );
   },
+  deleteBookingById:(booking_id,slot_id, callBack) => {
+    db.query(
+      `Delete from bookings where booking_id=?;update slots set status='free' where slot_id=?`,
+      [
+        booking_id,
+        slot_id
+      ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+
+  },
 
 
   //Booking Request
