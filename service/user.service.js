@@ -582,7 +582,7 @@ module.exports = {
   getBookingByTime: (data, callBack) => {
     console.log({data})
     db.query(
-      `select bookings.*, parking.name, parking.image_url, parking.map from bookings INNER JOIN parking ON bookings.parking_id = parking.parking_id where booking_from>? and bookings.checkout is NULL and user_id=? `,
+      `select bookings.*, parking.name, parking.image_url, parking.map from bookings INNER JOIN parking ON bookings.parking_id = parking.parking_id where booking_from>? and bookings.type=0 and bookings.checkout is NULL and user_id=? `,
       [
         data.booking_from,
         data.user_id
