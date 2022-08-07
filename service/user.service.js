@@ -392,21 +392,21 @@ module.exports = {
   },
   getAllEmptySlots: (parking_id, booking_till, booking_from, callBack) => {
     db.query(
-      `select s.slot_id, b.booking_from,b.booking_till, b.user_id from slots s LEFT JOIN bookings b ON s.slot_id = b.slot_id where s.status=0 order by s.slot_id`,
+      `select * from slots where type=1 and parking_id=? and  slot_id not in (select slot_id from bookings where parking_id<>? and checkout is NULL and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) or status<>'free' )  order by floor_id , y , x `,
       [
+        parking_id,
+        parking_id,
+        booking_from,
         booking_till,
-        parking_id
+        booking_from,
+        booking_till,
       ],
 
       (error, results, fields) => {
         if (error) {
           return callBack(error);
         }
-        console.log('\ncheck prev booking\n')
-        let filteredResult1 = results.filter((x) => checkAvaibilityFrom(x.booking_till, booking_from, 1))
-        console.log('\ncheck upcoming booking\n')
-        let filteredResult2 = filteredResult1.filter((x) => checkAvaibilityTill(x.booking_from, booking_till, 1))
-        return callBack(null, filteredResult2);
+        return callBack(null, results);
       }
     );
 
@@ -434,7 +434,7 @@ module.exports = {
   },
   getAllEmptySlotsForInstant: (parking_id, booking_till, booking_from, callBack) => {
     db.query(
-      `select * from slots where type=1 and parking_id=? and slot_id not in (select slot_id from bookings where parking_id<>? and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) or status<>'free' )  order by floor_id , y , x `,
+      `select * from slots where type=1 and parking_id=? and  slot_id not in (select slot_id from bookings where parking_id<>? and checkout is NULL and (booking_from >= ? and booking_from <= (?+1*60*60*1000))  or booking_till >= (?-1*60*60*1000) and booking_till <= (?) or status<>'free' )  order by floor_id , y , x `,
       [
         parking_id,
         parking_id,
