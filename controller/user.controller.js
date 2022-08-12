@@ -1287,10 +1287,10 @@ module.exports = {
             message: err.message
           });
         }
-        if (!booking) {
+        if (!booking[0]) {
           return res.status(500).json({
             success: false,
-            message: "Parking Details not found"
+            message: "Booking Details not found"
           });
         }
         slot_id = booking[0].slot_id
@@ -1298,8 +1298,8 @@ module.exports = {
         duration = duration / (1000 * 60 * 60)
         charge = duration * rate
         console.log(booking[0].checkout, current_time)
-        if (booking[0].checkout > current_time) {
-          extra = (current_time - parseInt(booking[0].checkout)) - duration
+        if (current_time> booking[0].booking_till) {
+          extra = (current_time - parseInt(booking[0].booking_till))
           penalty = extra / (1000 * 60 * 60) * parseInt(penalty_rate)
         }
         checkout({ checkout: current_time, charge, penalty, booking_id, slot_id }, async (err, results) => {
