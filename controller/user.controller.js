@@ -1302,6 +1302,7 @@ module.exports = {
           extra = (current_time - parseInt(booking[0].booking_till))
           penalty = extra / (1000 * 60 * 60) * parseInt(penalty_rate)
         }
+
         checkout({ checkout: current_time, charge, penalty, booking_id, slot_id }, async (err, results) => {
           if (err) {
             console.log(err);
@@ -1634,7 +1635,7 @@ function TimeDiff(booking_from) {
       }
       else if (days == 1) {
         return "Tommorow"
-      } else if (days = 0) {
+      } else if (days == 0) {
         return "Today"
       }
 
