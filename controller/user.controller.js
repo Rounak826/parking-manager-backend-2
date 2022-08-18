@@ -1295,7 +1295,7 @@ module.exports = {
           });
         }
         slot_id = booking[0].slot_id
-        duration = parseInt(booking[0].booking_till) - parseInt(booking[0].booking_from)+5*60*60*1000+30*60*1000
+        duration = parseInt(booking[0].booking_till) - parseInt(booking[0].booking_from)-5*60*60*1000-30*60*1000
         duration = duration / (1000 * 60 * 60)
         charge = duration * rate
         console.log(booking[0].checkout, current_time)
