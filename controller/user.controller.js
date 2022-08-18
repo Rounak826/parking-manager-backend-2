@@ -1256,7 +1256,7 @@ module.exports = {
     const booking_id = req.query.booking_id
     const date = new Date()
     //current time with 10 min allowance
-    const current_time = date.getTime() + 10 * 60 * 60 * 1000
+    const current_time = date.getTime() - 320  * 60 * 1000
     let rate = 0
     let charge = 0
     let penalty_rate = 0
