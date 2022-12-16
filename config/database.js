@@ -25,9 +25,17 @@ const db_config2 = {
   connectionLimit: 50,
   multipleStatements: true
 };
+const db_config3 = {
+  host: "sql.freedb.tech",
+  user: "freedb_admin_rounak",
+  password: "",
+  database: "freedb_smart_parking",
+  connectionLimit: 50,
+  multipleStatements: true
+};
 var db;
 function handleDisconnect() {
-  db = mysql.createConnection(db_config); // Recreate the connection, since
+  db = mysql.createConnection(db_config3); // Recreate the connection, since
 
   db.connect(function (err) {              // The server is either down
     if (err) {                                     // or restarting (takes a while sometimes).

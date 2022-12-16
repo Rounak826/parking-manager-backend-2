@@ -1371,6 +1371,7 @@ module.exports = {
 
         let charge = results[0].type == 0 ? parseInt(results[0].charge) : 0
         let penalty = parseInt(results[0].penalty) || 0
+        console.log(charge,penalty)
         if (charge == 0) {
           updateRequestStatus(603, req.query.request_id, (err, result) => {
             if (err) {
