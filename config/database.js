@@ -35,9 +35,9 @@ const db_config3 = {
 };
 var db;
 function handleDisconnect() {
-  db = mysql.createConnection(db_config3); // Recreate the connection, since
+  db = mysql.createPool(db_config3); // Recreate the connection, since
 
-  db.connect(function (err) {              // The server is either down
+  db.getConnection(function (err) {              // The server is either down
     if (err) {                                     // or restarting (takes a while sometimes).
       console.log('error when connecting to db:', err);
       setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
