@@ -28,7 +28,7 @@ const db_config2 = {
 const db_config3 = {
   host: "sql.freedb.tech",
   user: "freedb_admin_rounak",
-  password: "",
+  password: "kCW4!9V6H#?wZZy",
   database: "freedb_smart_parking",
   connectionLimit: 50,
   multipleStatements: true
