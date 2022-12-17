@@ -1102,7 +1102,9 @@ module.exports = {
     let booking_till = req.body.booking_till
     if(req.body.type==0){
       console.log({booking_from,booking_till})
-      booking_from = new Date(req.body.booking_from).getTime() + 5*60*60*1000+30*60*1000
+
+      //booking_from = new Date(req.body.booking_from).getTime() + 5*60*60*1000+30*60*1000
+      booking_from = new Date(req.body.booking_from).getTime()
       booking_till = new Date(req.body.booking_till).getTime()
     }
     

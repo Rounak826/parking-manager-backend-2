@@ -170,7 +170,7 @@ CREATE TABLE `codes` (
   `id` int(11) NOT NULL,
   `code` int(11) NOT NULL,
   `message` varchar(400) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `codes`
@@ -395,7 +395,7 @@ CREATE TABLE `transactions` (
   `booking_id` int(11) NOT NULL,
   `payment_id` varchar(100) DEFAULT NULL,
   `timestamp` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `transactions`

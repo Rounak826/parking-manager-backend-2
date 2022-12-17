@@ -35,7 +35,7 @@ const db_config3 = {
 };
 var db;
 function handleDisconnect() {
-  db = mysql.createPool(db_config3); // Recreate the connection, since
+  db = mysql.createPool(db_config2); // Recreate the connection, since
 
   db.getConnection(function (err) {              // The server is either down
     if (err) {                                     // or restarting (takes a while sometimes).
