@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 
-const db_config = {
+const db_config3 = {
   host: "mysql-113630-0.cloudclusters.net",
   user: "admin",
   password: "VH9bgDyg",
@@ -28,7 +28,7 @@ const db_config2 = {
   connectionLimit: 50,
   multipleStatements: true,
 };
-const db_config3 = {
+const db_config = {
   host: "sql12.freesqldatabase.com",
   user: "sql12601144",
   password: "ifGQbDf9Vy",
