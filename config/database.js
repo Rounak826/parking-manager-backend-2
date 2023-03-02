@@ -1,11 +1,15 @@
 const mysql = require("mysql");
 
 const db_config = {
-  host: "remotemysql.com",
-  user: "FD2e9bxeWt",
-  password: "bccLWKcHPx",
-  database: "FD2e9bxeWt",
+  host: "mysql-113630-0.cloudclusters.net",
+  user: "admin",
+  password: "VH9bgDyg",
+  database: "parking_management",
   connectionLimit: 50,
+  connectTimeout: 60 * 60 * 1000,
+  acquireTimeout: 60 * 60 * 1000,
+  timeout: 60 * 60 * 1000,
+  port: 15187,
   multipleStatements: true,
 };
 const db_config1 = {
@@ -34,7 +38,7 @@ const db_config3 = {
 };
 var db;
 function handleDisconnect() {
-  db = mysql.createPool(db_config3); // Recreate the connection, since
+  db = mysql.createPool(db_config); // Recreate the connection, since
 
   db.getConnection(function (err) {
     // The server is either down
