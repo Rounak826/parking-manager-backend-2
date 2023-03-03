@@ -907,13 +907,8 @@ module.exports = {
                 success: false,
                 message: "Failed To Book Slot",
               });
-            return res.status(200).json({
-              success: true,
-              data: first_empty_slot,
-              booking_id: bookingResults[0].insertId,
-              message: "Slot Booked Successfully",
-            });
-            /*getParkingDetails(req.body.parking_id, (err, parking) => {
+
+            getParkingDetails(req.body.parking_id, (err, parking) => {
               if (err) {
                 console.log(err);
                 return res.status(500).json({
@@ -962,7 +957,7 @@ module.exports = {
                   });
                 }
               );
-            });*/
+            });
           }
         );
       }
