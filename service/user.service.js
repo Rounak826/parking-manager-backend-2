@@ -697,10 +697,10 @@ module.exports = {
       [data.method, data.payment_id, data.timestamp, data.order_id],
       (error, results, fields) => {
         if (error) {
-          console.log({ error });
+          console.log("error:", { error });
           return callBack(error);
         }
-        console.log({ results });
+        console.log("success", { results });
 
         return callBack(null, results);
       }
