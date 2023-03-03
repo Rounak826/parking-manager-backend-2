@@ -1361,7 +1361,7 @@ module.exports = {
           parseInt(booking[0].booking_till) - parseInt(booking[0].booking_from);
         duration = duration / (1000 * 60 * 60);
         charge = duration * rate;
-        console.log(booking[0].checkout, current_time, duration);
+        console.log({ checkout: booking[0].checkout, current_time, duration });
         if (current_time > booking[0].booking_till) {
           extra = current_time - parseInt(booking[0].booking_till);
           penalty = (extra / (1000 * 60 * 60)) * parseInt(penalty_rate);
@@ -1434,7 +1434,7 @@ module.exports = {
         }
 
         let charge = results[0].type == 0 ? parseInt(results[0].charge) : 0;
-        let penalty = parseInt(results[0].penalty) || 0;
+        let penalty = 0;
         console.log({ charge, penalty });
         if (charge + penalty == 0) {
           updateRequestStatus(603, req.query.request_id, (err, result) => {
