@@ -33,7 +33,7 @@ const db_config = {
   user: "sql12601144",
   password: "ifGQbDf9Vy",
   database: "sql12601144",
-  connectionLimit: 50,
+  connectionLimit: 100,
   multipleStatements: true,
 };
 var db;
