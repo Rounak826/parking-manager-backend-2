@@ -691,14 +691,17 @@ module.exports = {
     );
   },
   updateTransaction: (data, callBack) => {
-    console.log("updating Transactions");
+    console.log("updating Transactions", data);
     db.query(
       `update transactions set method=?,payment_id=?, timestamp=? where order_id=?`,
       [data.method, data.payment_id, data.timestamp, data.order_id],
       (error, results, fields) => {
         if (error) {
+          console.log({ error });
           return callBack(error);
         }
+        console.log({ results });
+
         return callBack(null, results);
       }
     );
