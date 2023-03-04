@@ -164,10 +164,10 @@ app.post("/verification", (req, res) => {
     const timestamp = date.getTime();
     getRequestIdbyOrderId(transaction.order_id, (err, request) => {
       console.log({ err, request });
-      updateRequestStatus(601, request[0].request_id, (err, results) => {
+      /* updateRequestStatus(601, request[0].request_id, (err, results) => {
         console.log({ err, results });
         return res.json({ status: "ok", err, results });
-      });
+      });*/
     });
     updateTransaction(
       {
@@ -184,9 +184,17 @@ app.post("/verification", (req, res) => {
     );
   } else {
     // reject it
+    getRequestIdbyOrderId(transaction.order_id, (err, request) => {
+      console.log({ err, request });
+      updateRequestStatus(602, request[0].request_id, (err, results) => {
+        console.log({ err, results });
+        return res.json({ status: "ok", err, results });
+      });
+    });
+
     console.log("request is illegit");
   }
-  res.json({ status: "ok" });
+  //res.json({ status: "ok" });
 });
 app.get("/parkingPayments", checkToken, parkingPayments);
 //testing
