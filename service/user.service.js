@@ -696,6 +696,7 @@ module.exports = {
       `update transactions set method=?,payment_id=?, timestamp=? where order_id=?`,
       [data.method, data.payment_id, data.timestamp, data.order_id],
       (error, results, fields) => {
+        console.log("result update transaction:", { error, results });
         if (error) {
           console.log("error:", { error });
           return callBack(error);
