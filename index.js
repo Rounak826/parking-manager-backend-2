@@ -172,16 +172,16 @@ app.post("/verification", (req, res) => {
       (err, updateTransaction) => {
         console.log({ err, updateTransaction });
         if (!err) {
-          getRequestIdbyOrderId(transaction.order_id, (err, request) => {
-            console.log({ err, request });
-            updateRequestStatus(601, request[0].request_id, (err, results) => {
-              console.log({ err, results });
-              return res.json({ status: "ok", err, results });
-            });
-          });
         }
       }
     );
+    getRequestIdbyOrderId(transaction.order_id, (err, request) => {
+      console.log({ err, request });
+      updateRequestStatus(601, request[0].request_id, (err, results) => {
+        console.log({ err, results });
+        return res.json({ status: "ok", err, results });
+      });
+    });
   } else {
     // reject it
     console.log("request is illegit");
