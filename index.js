@@ -162,6 +162,13 @@ app.post("/verification", (req, res) => {
     // process it
     const date = new Date();
     const timestamp = date.getTime();
+    getRequestIdbyOrderId(transaction.order_id, (err, request) => {
+      console.log({ err, request });
+      updateRequestStatus(601, request[0].request_id, (err, results) => {
+        console.log({ err, results });
+        return res.json({ status: "ok", err, results });
+      });
+    });
     updateTransaction(
       {
         payment_id: transaction.id,
@@ -175,13 +182,6 @@ app.post("/verification", (req, res) => {
         }
       }
     );
-    getRequestIdbyOrderId(transaction.order_id, (err, request) => {
-      console.log({ err, request });
-      updateRequestStatus(601, request[0].request_id, (err, results) => {
-        console.log({ err, results });
-        return res.json({ status: "ok", err, results });
-      });
-    });
   } else {
     // reject it
     console.log("request is illegit");
