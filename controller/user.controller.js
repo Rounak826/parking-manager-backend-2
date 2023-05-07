@@ -43,6 +43,11 @@ const {
   getRequestIdbyOrderId,
   deleteBookingById,
   getFloorByFloorNo,
+  getBookingsCount,
+  checkIn,
+  getBookingDetailsAtCheckin,
+  getBookingDetailsAtCheckOut,
+  checkout_new,
 } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
@@ -849,6 +854,33 @@ module.exports = {
     );
   },
   //booking
+  testAddBooking: (req, res) => {
+    console.log("add slot", req.body);
+
+    const { parking_id, slot_id } = req.body;
+    const body = req.body;
+    body.booking_till = new Date(body.booking_till).getTime();
+    body.booking_from = new Date(body.booking_from).getTime();
+    addBooking({ parking_id, slot_id, ...req.body }, true, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      if (results.length > 0)
+        return res.status(400).json({
+          success: false,
+          message: "Failed To Book Slot",
+        });
+
+      return res.status(200).json({
+        success: true,
+        message: "Slot Booked Successfully",
+      });
+    });
+  },
   InstantBooking: (req, res) => {
     const parking_id = req.decoded.result.user_id;
     const body = req.body;
@@ -1007,6 +1039,202 @@ module.exports = {
       }
     );
   },
+  bookByCount: (req, res) => {
+    const user_id = req.decoded.result.user_id;
+    const body = req.body;
+    const parking_id = body.parking_id;
+    body.booking_till = new Date(body.booking_till).getTime();
+    body.booking_from = new Date(body.booking_from).getTime();
+    console.log(body);
+    getParkingDetails(parking_id, (err, parkingResult) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      console.log(parkingResult.length);
+      getBookingsCount(
+        parking_id,
+        body.booking_till,
+        body.booking_from,
+        (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: false,
+              message: err.message,
+            });
+          }
+          const bookingCount = results.length;
+          const capacity = parkingResult.capacity - bookingCount;
+          if (capacity < 5) {
+            return res.status(200).json({
+              success: false,
+              message: "Parking isfull",
+            });
+          }
+          addBooking(
+            {
+              user_id,
+              instant: false,
+              ...body,
+              booking_from: body.booking_from,
+            },
+            false,
+            (err, bookingResults) => {
+              if (err) {
+                console.log(err);
+                return res.status(500).json({
+                  success: false,
+                  message: err.message,
+                });
+              }
+              console.log(bookingResults);
+              if (bookingResults.affectedRows == 0)
+                return res.status(400).json({
+                  success: false,
+                  message: "Failed To Book Slot",
+                });
+
+              return res.status(200).json({
+                success: true,
+                message: "Booked Successfully",
+              });
+            }
+          );
+          //reserve 5 slots
+        }
+      );
+
+      //reserve 5 slots
+    });
+  },
+  getBookingsCount: (req, res) => {
+    const user_id = req.decoded.result.user_id;
+    const body = req.query;
+    const parking_id = body.parking_id;
+    body.booking_till = new Date(body.booking_till).getTime();
+    body.booking_from = new Date(body.booking_from).getTime();
+    console.log(body);
+    getBookingsCount(
+      parking_id,
+      body.booking_till,
+      body.booking_from,
+      (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        console.log(results.length);
+        return res
+          .status(200)
+          .json({ message: "success", data: results.length });
+        //reserve 5 slots
+      }
+    );
+  },
+  checkin: (req, res) => {
+    const parking_id = req.decoded.result.user_id;
+    const booking_from = new Date(req.query.booking_from).getTime();
+    console.log(parking_id, booking_from, req.query.user_id);
+    getBookingDetailsAtCheckin(
+      parking_id,
+      req.query.user_id,
+      booking_from,
+      (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        if (results.length == 0)
+          return res.status(400).json({
+            success: false,
+            message: "No Bookings found",
+          });
+        let booking = results[0];
+        console.log(booking.booking_id);
+        checkIn(
+          { checkin: booking_from, booking_id: booking.booking_id },
+          (err, results) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({
+                success: false,
+                message: err.message,
+              });
+            }
+            if (results.affectedRows == 0) {
+              return res.status(200).json({
+                success: false,
+                message: "checkin failed",
+              });
+            }
+            return res.status(200).json({
+              success: true,
+              message: "Checkin successfull",
+            });
+          }
+        );
+      }
+    );
+  },
+  checkout_new: (req, res) => {
+    const parking_id = req.decoded.result.user_id;
+    const time = new Date(req.query.time).getTime();
+    console.log(parking_id, time, req.query.user_id);
+    getBookingDetailsAtCheckOut(
+      parking_id,
+      req.query.user_id,
+      time,
+      (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: false,
+            message: err.message,
+          });
+        }
+        if (results.length == 0)
+          return res.status(400).json({
+            success: false,
+            message: "No Bookings found",
+          });
+        let booking = results[0];
+        console.log(booking.booking_id);
+        checkout_new(
+          { checkout: time, booking_id: booking.booking_id },
+          (err, results) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({
+                success: false,
+                message: err.message,
+              });
+            }
+            if (results.affectedRows == 0) {
+              return res.status(200).json({
+                success: false,
+                message: "checkout failed",
+              });
+            }
+            return res.status(200).json({
+              success: true,
+              message: "checkout successfull",
+            });
+          }
+        );
+      }
+    );
+  },
+
   updateBooking: (req, res) => {
     getBookingById(req.query.booking_id, (err, results) => {
       if (err) {

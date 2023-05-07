@@ -47,6 +47,11 @@ const {
   updateStatus,
   deleteBooking,
   deleteFloorByNo,
+  getBookingsCount,
+  testAddBooking,
+  bookByCount,
+  checkin,
+  checkout_new,
 } = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 
@@ -62,6 +67,7 @@ const {
   updateTransaction,
   getRequestIdbyOrderId,
   updateRequestStatus,
+  checkIn,
 } = require("./service/user.service");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -133,6 +139,10 @@ app.get("/getSlotById", checkToken, getSlotById);
 app.get("/updateSlotStatus", checkToken, updateSlotStatus);
 app.get("/updateSlotType", checkToken, updateSlotType);
 //bookings
+
+app.post("/test/addBooking", checkToken, testAddBooking);
+app.post("/bookByCount", checkToken, bookByCount);
+app.get("/getBookingCount", checkToken, getBookingsCount);
 app.post("/instantBooking", checkToken, InstantBooking);
 app.post("/bookForLater", checkToken, bookForLater);
 app.get("/userBookings", checkToken, getUserBookings);
@@ -146,8 +156,10 @@ app.get("/getRequestById", checkToken, getRequestById);
 app.get("/getUserActiveRequest", checkToken, getUserActiveRequest);
 app.get("/BookedSlotStatus", checkToken, BookedSlotStatus);
 
+app.get("/checkin", checkToken, checkin);
+
 //checkout
-app.get("/checkout", checkToken, checkout);
+app.get("/checkout", checkToken, checkout_new);
 app.get("/payAtCheckout", checkToken, payAtCheckout);
 app.get("/payAtBooking", checkToken, payAtBooking);
 app.post("/verification", (req, res) => {

@@ -485,10 +485,29 @@ module.exports = {
   },
 
   //booking
+  getBookingsCount: (parking_id, booking_till, booking_from, callBack) => {
+    db.query(
+      `SELECT *
+      FROM bookings
+      WHERE ( booking_from >= ? AND booking_from <= (?+1*60*60*1000))
+         OR (booking_till >= (?-1*60*60*1000) AND booking_till <= ?)
+         AND parking_id = ?;
+      `,
+      [booking_from, booking_till, booking_from, booking_till, parking_id],
+
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+
   addBooking: (data, instant, callBack) => {
     db.query(
       `insert into bookings(parking_id,slot_id,user_id,vehicle_id,booking_from,booking_till,type) 
-        values(?,?,?,?,?,?,?);update slots set status=? where slot_id=?`,
+        values(?,?,?,?,?,?,?)`,
       [
         data.parking_id,
         data.slot_id,
@@ -512,6 +531,30 @@ module.exports = {
     db.query(
       `select bookings.*, slots.status from bookings INNER JOIN slots ON bookings.slot_id = slots.slot_id where booking_id=?`,
       [id],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  getBookingDetailsAtCheckin: (parking_id, user_id, booking_from, callBack) => {
+    db.query(
+      `select * from bookings where parking_id= ? and user_id=? and booking_till>=?   `,
+      [parking_id, user_id, booking_from],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  getBookingDetailsAtCheckOut: (parking_id, user_id, time, callBack) => {
+    db.query(
+      `select * from bookings where parking_id= ? and user_id=? and booking_from<=? and checkout IS NULL and checkin IS NOT NULL `,
+      [parking_id, user_id, time],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
@@ -545,6 +588,32 @@ module.exports = {
         data.booking_id,
         data.slot_id,
       ],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  checkIn: (data, callBack) => {
+    console.log(data.booking_id);
+    db.query(
+      `update bookings set checkin = ? where booking_id=?`,
+      [data.checkin, data.booking_id],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
+  checkout_new: (data, callBack) => {
+    console.log(data.booking_id);
+    db.query(
+      `update bookings set checkout = ? where booking_id=?`,
+      [data.checkout, data.booking_id],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
