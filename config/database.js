@@ -21,7 +21,7 @@ const config = {
 
 var db;
 function handleDisconnect() {
-  db = mysql.createPool(config.local); // Recreate the connection, since
+  db = mysql.createPool(config.remote); // Recreate the connection, since
 
   db.getConnection(function (err) {
     // The server is either down
