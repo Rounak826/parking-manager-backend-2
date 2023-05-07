@@ -79,7 +79,7 @@ app.use(cors());
 app.use(express.static("storage"));
 app.get("/", async (req, res) => {
   console.log("calleaskjdbakjds");
-  return res.status(200).send("Success");
+  return res.status(200).json({ error: "No Error" });
 });
 
 app.get("/createDatabase", async (req, res) => {
