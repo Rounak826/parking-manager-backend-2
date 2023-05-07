@@ -52,6 +52,7 @@ const {
   bookByCount,
   checkin,
   checkout_new,
+  checkInOROut,
 } = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
 
@@ -156,7 +157,7 @@ app.get("/getRequestById", checkToken, getRequestById);
 app.get("/getUserActiveRequest", checkToken, getUserActiveRequest);
 app.get("/BookedSlotStatus", checkToken, BookedSlotStatus);
 
-app.get("/checkin", checkToken, checkin);
+app.get("/checkinorout", checkToken, checkInOROut);
 
 //checkout
 app.get("/checkout", checkToken, checkout_new);

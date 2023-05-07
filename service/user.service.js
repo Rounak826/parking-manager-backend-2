@@ -539,10 +539,10 @@ module.exports = {
       }
     );
   },
-  getBookingDetailsAtCheckin: (parking_id, user_id, booking_from, callBack) => {
+  getBookingDetailsAtCheckin: (parking_id, user_id, time, callBack) => {
     db.query(
-      `select * from bookings where parking_id= ? and user_id=? and booking_till>=?   `,
-      [parking_id, user_id, booking_from],
+      `select * from bookings where parking_id= ? and user_id=? and booking_till>=? or (booking_from<=? and checkout IS NULL)  `,
+      [parking_id, user_id, time, time],
       (error, results, fields) => {
         if (error) {
           return callBack(error);

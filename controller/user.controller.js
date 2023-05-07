@@ -1138,7 +1138,7 @@ module.exports = {
       }
     );
   },
-  checkin: (req, res) => {
+  checkInOROut: (req, res) => {
     console.log("checkin", req.query);
     const parking_id = req.decoded.result.user_id;
     let booking_from;
@@ -1177,29 +1177,60 @@ module.exports = {
             message: "No Bookings found",
           });
         let booking = results[0];
-        console.log(booking.booking_id);
-        checkIn(
-          { checkin: booking_from, booking_id: booking.booking_id },
-          (err, results) => {
-            if (err) {
-              console.log(err);
-              return res.status(500).json({
-                success: false,
-                message: err.message,
-              });
-            }
-            if (results.affectedRows == 0) {
+        console.log({ booking });
+        if (booking.checkout) {
+          return res.status(200).json({
+            success: false,
+            message: "Already checkout",
+          });
+        }
+        if (booking.checkin == null) {
+          checkIn(
+            { checkin: booking_from, booking_id: booking.booking_id },
+            (err, results) => {
+              if (err) {
+                console.log(err);
+                return res.status(500).json({
+                  success: false,
+                  message: err.message,
+                });
+              }
+              if (results.affectedRows == 0) {
+                return res.status(200).json({
+                  success: false,
+                  message: "checkin failed",
+                });
+              }
               return res.status(200).json({
-                success: false,
-                message: "checkin failed",
+                success: true,
+                message: "Checkin successfull",
               });
             }
-            return res.status(200).json({
-              success: true,
-              message: "Checkin successfull",
-            });
-          }
-        );
+          );
+        } else {
+          checkout_new(
+            { checkout: booking_from, booking_id: booking.booking_id },
+            (err, results) => {
+              if (err) {
+                console.log(err);
+                return res.status(500).json({
+                  success: false,
+                  message: err.message,
+                });
+              }
+              if (results.affectedRows == 0) {
+                return res.status(200).json({
+                  success: false,
+                  message: "checkout failed",
+                });
+              }
+              return res.status(200).json({
+                success: true,
+                message: "checkout successfull",
+              });
+            }
+          );
+        }
       }
     );
   },
