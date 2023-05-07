@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-
 module.exports = {
   checkToken: (req, res, next) => {
     let token = req.get("authorization");
@@ -13,7 +12,7 @@ module.exports = {
         if (err) {
           return res.json({
             success: false,
-            message: "Invalid Token..."
+            message: "Invalid Token...",
           });
         } else {
           req.decoded = decoded;
@@ -22,9 +21,9 @@ module.exports = {
       });
     } else {
       return res.json({
-        success: 0,
-        message: "Access Denied! Unauthorized User"
+        success: true,
+        message: "Access Denied! Unauthorized User",
       });
     }
-  }
+  },
 };

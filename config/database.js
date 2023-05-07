@@ -1,44 +1,27 @@
 const mysql = require("mysql");
 
-const db_config3 = {
-  host: "mysql-113630-0.cloudclusters.net",
-  user: "admin",
-  password: "VH9bgDyg",
-  database: "parking_management",
-  connectionLimit: 50,
-  connectTimeout: 60 * 60 * 1000,
-  acquireTimeout: 60 * 60 * 1000,
-  timeout: 60 * 60 * 1000,
-  port: 15187,
-  multipleStatements: true,
+const config = {
+  local: {
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "parking_management_2",
+    connectionLimit: 50,
+    multipleStatements: true,
+  },
+  remote: {
+    host: "sql12.freesqldatabase.com",
+    user: "sql12616557",
+    password: "ShSQUAR7P6",
+    database: "sql12616557",
+    connectionLimit: 100,
+    multipleStatements: true,
+  },
 };
-const db_config1 = {
-  host: "sql6.freemysqlhosting.net",
-  user: "sql6505187",
-  password: "ys3eF9Eegq",
-  database: "sql6505187",
-  connectionLimit: 50,
-  multipleStatements: true,
-};
-const db_config2 = {
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "parking_management",
-  connectionLimit: 50,
-  multipleStatements: true,
-};
-const db_config = {
-  host: "sql12.freesqldatabase.com",
-  user: "sql12601144",
-  password: "ifGQbDf9Vy",
-  database: "sql12601144",
-  connectionLimit: 100,
-  multipleStatements: true,
-};
+
 var db;
 function handleDisconnect() {
-  db = mysql.createPool(db_config); // Recreate the connection, since
+  db = mysql.createPool(config.local); // Recreate the connection, since
 
   db.getConnection(function (err) {
     // The server is either down

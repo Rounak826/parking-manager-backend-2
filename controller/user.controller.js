@@ -42,6 +42,7 @@ const {
   getFloorMapById,
   getRequestIdbyOrderId,
   deleteBookingById,
+  getFloorByFloorNo,
 } = require("../service/user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
@@ -67,7 +68,7 @@ module.exports = {
         });
       }
       if (result) {
-        return res.status(500).json({
+        return res.status(200).json({
           success: false,
           message: "Account already exists",
         });
@@ -122,7 +123,7 @@ module.exports = {
       }
 
       if (!results) {
-        return res.status(406).json({
+        return res.status(200).json({
           success: false,
           message: "Invalid email or password",
         });
@@ -141,7 +142,7 @@ module.exports = {
           user_id: results.user_id,
         });
       } else {
-        return res.status(406).json({
+        return res.status(200).json({
           success: false,
           message: "Invalid email or password",
         });
@@ -465,7 +466,8 @@ module.exports = {
   //floor
   addFloor: (req, res) => {
     const user_id = req.decoded.result.user_id;
-    addFloor({ ...req.body, parking_id: user_id }, (err, results) => {
+
+    getFloorByFloorNo(user_id, req.body.floor_no, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -473,20 +475,56 @@ module.exports = {
           message: err.message,
         });
       }
-      if (results.affectedRows == 0)
-        return res.status(400).json({
-          success: false,
-          message: "Failed To add slot",
+      console.log("body", results);
+      if (results.length > 0) {
+        updateFloorById(
+          { ...req.body, floor_id: results[0].floor_id, parking_id: user_id },
+          (err, results) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({
+                success: false,
+                message: err.message,
+              });
+            }
+            if (results.affectedRows == 0)
+              return res.status(400).json({
+                success: false,
+                message: "Failed To update slot",
+              });
+            return res.status(200).json({
+              success: true,
+              data: results,
+              message: "Floor updated Successfully.",
+            });
+          }
+        );
+      } else {
+        addFloor({ ...req.body, parking_id: user_id }, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: false,
+              message: err.message,
+            });
+          }
+          if (results.affectedRows == 0)
+            return res.status(400).json({
+              success: false,
+              message: "Failed To add slot",
+            });
+          return res.status(200).json({
+            success: true,
+            data: results,
+            message: "Floor added Successfully.",
+          });
         });
-      return res.status(200).json({
-        success: true,
-        data: results,
-        message: "Floor added Successfully.",
-      });
+      }
     });
   },
   getAllFloor: (req, res) => {
-    getAllFloors(req.query.parking_id, (err, results) => {
+    const user_id = req.decoded.result.user_id;
+    getAllFloors(user_id, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -575,10 +613,11 @@ module.exports = {
       });
     });
   },
-  deleteFloorById: (req, res) => {
+  deleteFloorByNo: (req, res) => {
+    console.log("query", req.query);
     let parking_id = req.decoded.result.user_id;
-    let floor_id = req.query.floor_id;
-    getFloorById(floor_id, (err, results) => {
+    let floor_no = req.query.floor_no;
+    getFloorByFloorNo(parking_id, floor_no, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -590,10 +629,12 @@ module.exports = {
       if (results.length == 0) {
         return res.status(400).json({
           success: false,
-          message: "No Slots Found",
+          message: "No Floor Found",
           error: err,
         });
       }
+      const { floor_id } = results[0];
+      console.log({ floor_id }, results);
       if (parking_id === results[0].parking_id)
         deleteFloorById(floor_id, (err, results) => {
           if (err) {
@@ -621,8 +662,9 @@ module.exports = {
 
   //slots
   addSlot: (req, res) => {
-    const data = JSON.parse(req.body.slots);
-    addSlots(data, (err, results) => {
+    console.log("add slot", req.body);
+
+    addSlots(req.body.slots, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({
@@ -705,7 +747,9 @@ module.exports = {
     );
   },
   getSlotsByFloor: (req, res) => {
-    getSlotsByFloor(req.query.floor_id, (err, results) => {
+    console.log(req.decoded.result);
+    const { floor_id } = req.query;
+    getSlotsByFloor(floor_id, (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json({

@@ -46,8 +46,10 @@ const {
   test,
   updateStatus,
   deleteBooking,
+  deleteFloorByNo,
 } = require("./controller/user.controller");
 //https://smart-parking-management-sys.herokuapp.com/
+
 const multer = require("multer");
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
@@ -76,7 +78,8 @@ const upload = multer({ storage: storage }).single("file");
 app.use(cors());
 app.use(express.static("storage"));
 app.get("/", async (req, res) => {
-  return res.status(400).json({ error: "Something went wrong" });
+  console.log("calleaskjdbakjds");
+  return res.status(200).send("Success");
 });
 
 app.get("/createDatabase", async (req, res) => {
@@ -95,7 +98,11 @@ app.post("/login", login);
 app.get("/userInfo", checkToken, getUserInfo);
 app.post("/updateUser", checkToken, updateUsers);
 app.post("/getAllUsers", checkToken, getUsers);
-
+app.get("/checkAuthentication", checkToken, (req, res) => {
+  return res.status(200).json({
+    success: true,
+  });
+});
 //vehicles
 app.post("/addVehicle", checkToken, addVehicle);
 app.post("/updateVehicle", checkToken, updateVehicle);
@@ -112,10 +119,10 @@ app.get("/getAllParkings", checkToken, getAllParking);
 
 //floor
 app.post("/addFloor", checkToken, addFloor);
-app.get("/getAllFloor", getAllFloor);
+app.get("/getAllFloor", checkToken, getAllFloor);
 app.get("/getFloorMap", getFloorMap);
 app.post("/updateFloorById", checkToken, updateFloorById);
-app.get("/deleteFloorById", checkToken, deleteFloorById);
+app.get("/deleteFloorByNo", checkToken, deleteFloorByNo);
 
 //slots
 app.post("/addSlot", checkToken, addSlot);

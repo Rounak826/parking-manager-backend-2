@@ -18,16 +18,9 @@ module.exports = {
   },
   create: (data, callBack) => {
     db.query(
-      `insert into user(name,email,password,mobile,mobile_2,address) 
-                values(?,?,?,?,?,?)`,
-      [
-        data.name,
-        data.email,
-        data.password,
-        data.mobile,
-        data.mobile_2,
-        data.address,
-      ],
+      `insert into user(email,password) 
+                values(?,?)`,
+      [data.email, data.password],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
@@ -50,7 +43,7 @@ module.exports = {
   },
   getUserById: (id, callBack) => {
     db.query(
-      `select id,firstName,lastName,gender,email,number from user where id = ?`,
+      `select * EXCEPT(password) from user where id = ?`,
       [id],
       (error, results, fields) => {
         if (error) {
@@ -139,22 +132,19 @@ module.exports = {
   //parking
   addParking: (data, callBack) => {
     db.query(
-      `insert into parking(parking_id,name,email,mobile,mobile2,address,map,image_url,rate,penalty_rate,capacity,facilities,upi_id) 
-      values(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `insert into parking(parking_id,name,email,mobile,address,map,image_url,rate,penalty_rate,capacity) 
+      values(?,?,?,?,?,?,?,?,?,?)`,
       [
         data.parking_id,
         data.name,
         data.email,
         data.mobile,
-        data.mobile2,
         data.address,
         data.map,
         data.image_url,
         data.rate,
         data.penalty_rate,
         data.capacity,
-        data.facilities,
-        data.upi_id,
       ],
       (error, results, fields) => {
         if (error) {
@@ -262,6 +252,18 @@ module.exports = {
       }
     );
   },
+  getFloorByFloorNo: (id, floor_no, callBack) => {
+    db.query(
+      `select floor_id,parking_id from floors where parking_id=? and floor_no=?`,
+      [id, floor_no],
+      (error, results, fields) => {
+        if (error) {
+          return callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
   updateFloorById: (data, callBack) => {
     db.query(
       `update floors set floor_no=?,grid_row=?,grid_column=? where floor_id=?`,
@@ -301,9 +303,10 @@ module.exports = {
 
   //slots
   addSlots: (data, callBack) => {
-    const rows = data.map((x) => Object.values(JSON.parse(x)));
+    const rows = data.map((x) => Object.values(x));
+    console.log(rows[0]);
     db.query(
-      `insert into slots(parking_id,floor_id,y,x,specially_abled_friendly,type) 
+      `insert into slots(x,y,type,parking_id,floor_id) 
         values ?`,
       [rows],
 
@@ -409,10 +412,10 @@ module.exports = {
       }
     );
   },
-  getSlotsByFloor: (id, callBack) => {
+  getSlotsByFloor: (floor_id, callBack) => {
     db.query(
       `select * from slots where floor_id = ?`,
-      [id],
+      [floor_id],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
