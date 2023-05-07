@@ -137,7 +137,7 @@ module.exports = {
       if (result) {
         results.password = undefined;
         const jsontoken = sign({ result: results }, "qwe1234", {
-          expiresIn: "24h",
+          expiresIn: "30d",
         });
 
         return res.status(200).json({
@@ -1139,8 +1139,10 @@ module.exports = {
     );
   },
   checkin: (req, res) => {
+    console.log("checkin", req.query);
     const parking_id = req.decoded.result.user_id;
     const booking_from = new Date(req.query.booking_from).getTime();
+
     console.log(parking_id, booking_from, req.query.user_id);
     getBookingDetailsAtCheckin(
       parking_id,
