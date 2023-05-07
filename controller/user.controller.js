@@ -1141,7 +1141,22 @@ module.exports = {
   checkin: (req, res) => {
     console.log("checkin", req.query);
     const parking_id = req.decoded.result.user_id;
-    const booking_from = new Date(req.query.booking_from).getTime();
+    let booking_from;
+    if (req.query.booking_from) {
+      booking_from = new Date(req.query.booking_from).getTime();
+    } else {
+      var currentTime = new Date();
+
+      var currentOffset = currentTime.getTimezoneOffset();
+
+      var ISTOffset = 330; // IST offset UTC +5:30
+
+      var ISTTime = new Date(
+        currentTime.getTime() + (ISTOffset + currentOffset) * 60000
+      );
+
+      booking_from = ISTTime.getTime();
+    }
 
     console.log(parking_id, booking_from, req.query.user_id);
     getBookingDetailsAtCheckin(
