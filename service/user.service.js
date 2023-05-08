@@ -539,10 +539,10 @@ module.exports = {
       }
     );
   },
-  getBookingDetailsAtCheckin: (parking_id, user_id, time, callBack) => {
+  getBookingDetailsAtCheckin: (parking_id, vehicle_id, time, callBack) => {
     db.query(
-      `select * from bookings where parking_id= ? and user_id=? and booking_till>=? or (booking_from<=? and checkout IS NULL)  `,
-      [parking_id, user_id, time, time],
+      `select * from bookings where parking_id= ? and vehicle_id=? and booking_till>=? or (booking_from<=? and checkout IS NULL)  `,
+      [parking_id, vehicle_id, time, time],
       (error, results, fields) => {
         if (error) {
           return callBack(error);
@@ -715,7 +715,10 @@ module.exports = {
   },
   getUserActiveRequest: (id, callBack) => {
     db.query(
-      `select book_request.*, parking.name,parking.parking_id, floors.floor_no, slots.slot_id, codes.message from book_request INNER JOIN bookings on book_request.booking_id= bookings.booking_id INNER JOIN slots ON bookings.slot_id = slots.slot_id INNER JOIN parking on bookings.parking_id= parking.parking_id INNER JOIN floors ON slots.floor_id = floors.floor_id INNER JOIN codes on book_request.status= codes.code  where book_request.user_id=? and book_request.status IN (400,500,501,502,600,602) order by req_time desc`,
+      `SELECT bookings.*, parking.*
+      FROM bookings
+      JOIN parking ON bookings.parking_id = parking.parking_id
+      WHERE checkin IS NOT NULL AND checkout IS NULL AND bookings.user_id = ?;`,
       [id],
       (error, results, fields) => {
         if (error) {

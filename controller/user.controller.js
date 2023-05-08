@@ -1160,10 +1160,15 @@ module.exports = {
       booking_from = ISTTime.getTime();
     }
 
-    console.log(parking_id, booking_from, req.query.user_id);
+    console.log(
+      parking_id,
+      booking_from,
+      req.query.user_id,
+      req.query.vehicle_id
+    );
     getBookingDetailsAtCheckin(
       parking_id,
-      req.query.user_id,
+      req.query.vehicle_id,
       booking_from,
       (err, results) => {
         if (err) {
