@@ -1045,6 +1045,8 @@ module.exports = {
     const parking_id = body.parking_id;
     body.booking_till = new Date(body.booking_till).getTime();
     body.booking_from = new Date(body.booking_from).getTime();
+    body.slot_id = "";
+    body.type = 1;
     console.log(body);
     getParkingDetails(parking_id, (err, parkingResult) => {
       if (err) {
